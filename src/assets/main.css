@@ -1,0 +1,8 @@
+/* @import url("styles/FeedItem.css"); */
+body {
+  background-color: #0e061a;
+  margin: 0;
+  padding: 0;
+  color: white !important;
+  /* HAPUS display: block; */
+}
