@@ -35,7 +35,14 @@
         <div class="search-modal-header">
           <h2>Pencarian</h2>
           <button class="close-search-btn" @click="closeSearchModal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
@@ -45,7 +52,15 @@
         <!-- Search Input -->
         <div class="search-input-container">
           <div class="search-input-wrapper">
-            <svg class="search-input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg
+              class="search-input-icon"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
@@ -58,7 +73,14 @@
               ref="searchInput"
             />
             <button v-if="searchQuery" @click="clearSearch" class="clear-search-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
@@ -68,37 +90,48 @@
 
         <!-- Search Results -->
         <div class="search-content">
-  <div v-if="searchResults.length > 0">
-    <div
-      v-for="result in searchResults"
-      :key="result.id"
-      class="search-result-item"
-      @click="goToResult(result)"
-      style="cursor: pointer; padding: 12px; border-bottom: 1px solid #eee;"
-    >
-      <p>{{ result.content }}</p>
-      <small>Penulis: {{ result.author?.fullName || 'Tidak diketahui' }}</small>
-    </div>
-  </div>
+          <div v-if="searchResults.length > 0">
+            <div
+              v-for="result in searchResults"
+              :key="result.id"
+              class="search-result-item"
+              @click="goToResult(result)"
+              style="cursor: pointer; padding: 12px; border-bottom: 1px solid #eee"
+            >
+              <p>{{ result.content }}</p>
+              <small>Penulis: {{ result.author?.fullName || 'Tidak diketahui' }}</small>
+            </div>
+          </div>
 
-  <div v-else class="search-empty-state">
-    <div class="empty-state-content">
-      <div class="empty-state-icon">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-      </div>
-      <h3>Mulai Pencarian</h3>
-      <p>Ketik kata kunci untuk mencari postingan, pengguna, atau topik yang menarik</p>
-    </div>
-  </div>
-</div>
+          <div v-else class="search-empty-state">
+            <div class="empty-state-content">
+              <div class="empty-state-icon">
+                <svg
+                  width="48"
+                  height="48"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </div>
+              <h3>Mulai Pencarian</h3>
+              <p>Ketik kata kunci untuk mencari postingan, pengguna, atau topik yang menarik</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Notification Modal -->
-    <div v-if="showNotificationModal" class="notification-modal-overlay" @click.self="closeNotificationModal">
+    <div
+      v-if="showNotificationModal"
+      class="notification-modal-overlay"
+      @click.self="closeNotificationModal"
+    >
       <div class="notification-modal">
         <!-- Modal Header -->
         <div class="notification-modal-header">
@@ -108,7 +141,14 @@
               Tandai Semua Dibaca
             </button>
             <button class="close-notification-btn" @click="closeNotificationModal">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
                 <line x1="18" y1="6" x2="6" y2="18"></line>
                 <line x1="6" y1="6" x2="18" y2="18"></line>
               </svg>
@@ -146,16 +186,16 @@
               @click="handleNotificationClick(notification)"
             >
               <div class="notification-avatar">
-  <!-- Fixed: Gunakan getAvatarUrl helper dan fallback yang proper -->
-  <img
-    v-if="notification.avatar && notification.avatar !== '/api/placeholder/40/40'"
-    :src="getAvatarUrl(notification.avatar)"
-    :alt="notification.username"
-    @error="handleAvatarError"
-  />
-  <div v-else class="avatar-placeholder">
-    {{ (notification.username || 'U').charAt(0).toUpperCase() }}
-  </div>
+                <!-- Fixed: Gunakan getAvatarUrl helper dan fallback yang proper -->
+                <img
+                  v-if="notification.avatar && notification.avatar !== '/api/placeholder/40/40'"
+                  :src="getAvatarUrl(notification.avatar)"
+                  :alt="notification.username"
+                  @error="handleAvatarError"
+                />
+                <div v-else class="avatar-placeholder">
+                  {{ (notification.username || 'U').charAt(0).toUpperCase() }}
+                </div>
                 <!-- Notification type icon overlay -->
                 <div class="notification-type-icon" :class="notification.type">
                   <svg
@@ -307,7 +347,7 @@
 <script>
 import io from 'socket.io-client'
 import { getAvatarUrl } from '@/utils/avatar'
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 export default {
   name: 'Sidebar',
   data() {
@@ -331,7 +371,7 @@ export default {
         { id: 'follow', label: 'Mengikuti', count: 0 },
         { id: 'mention', label: 'Sebutan', count: 0 },
       ],
-      socket: null
+      socket: null,
     }
   },
   computed: {
@@ -362,13 +402,12 @@ export default {
       this.$router.push(path)
     },
 
-
     goToResult(result) {
       // Tutup modal pencarian terlebih dahulu
-      this.closeSearchModal();
+      this.closeSearchModal()
 
       // Arahkan ke halaman detail post
-      this.$router.push(`/post/${result.id}`);
+      this.$router.push(`/post/${result.id}`)
     },
 
     // Search methods
@@ -387,25 +426,28 @@ export default {
       this.searchResults = []
     },
     async handleSearchInput() {
-  if (this.searchQuery.trim() === '') {
-    this.searchResults = []
-    return
-  }
+      if (this.searchQuery.trim() === '') {
+        this.searchResults = []
+        return
+      }
 
-  try {
-    const response = await fetch(`http://localhost:5000/api/search?q=${encodeURIComponent(this.searchQuery)}`, {
-      method: 'GET',
-      credentials: 'include'
-    })
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/api/search?q=${encodeURIComponent(this.searchQuery)}`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          },
+        )
 
-    if (!response.ok) throw new Error('Failed to fetch search results')
+        if (!response.ok) throw new Error('Failed to fetch search results')
 
-    this.searchResults = await response.json()
-  } catch (error) {
-    console.error('Search error:', error)
-    this.searchResults = []
-  }
-},
+        this.searchResults = await response.json()
+      } catch (error) {
+        console.error('Search error:', error)
+        this.searchResults = []
+      }
+    },
 
     // Notification methods
     openNotificationModal() {
@@ -431,9 +473,9 @@ export default {
     async markAllAsRead() {
       const token = localStorage.getItem('token')
       try {
-        await fetch('http://localhost:5000/api/notifications/mark-all-read', {
+        await fetch(`${API_BASE_URL}/api/notifications/mark-all-read`, {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         })
         this.notifications.forEach((notif) => {
           notif.isRead = true
@@ -489,7 +531,7 @@ export default {
           minute: '2-digit',
           day: '2-digit',
           month: 'short',
-          year: 'numeric'
+          year: 'numeric',
         }),
         isRead: false,
       })
@@ -499,13 +541,13 @@ export default {
     async loadNotifications() {
       const token = localStorage.getItem('token')
       try {
-        const response = await fetch('http://localhost:5000/api/notifications', {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const response = await fetch(`${API_BASE_URL}/api/notifications`, {
+          headers: { Authorization: `Bearer ${token}` },
         })
         const notifData = await response.json()
 
         if (Array.isArray(notifData)) {
-          this.notifications = notifData.map(n => ({
+          this.notifications = notifData.map((n) => ({
             id: n.id,
             type: n.type,
             username: n.actor?.fullName || n.actor?.username || '-',
@@ -517,9 +559,9 @@ export default {
               minute: '2-digit',
               day: '2-digit',
               month: 'short',
-              year: 'numeric'
+              year: 'numeric',
             }),
-            isRead: n.isRead
+            isRead: n.isRead,
           }))
           this.updateFilterCounts()
         }
@@ -531,15 +573,15 @@ export default {
       const token = localStorage.getItem('token')
       const userId = localStorage.getItem('userId')
 
-      this.socket = io('http://localhost:5000', {
-        auth: { token }
+      this.socket = io(`${API_BASE_URL}`, {
+        auth: { token },
       })
 
       this.socket.on('connect', () => {
         this.socket.emit('identify', userId)
       })
 
-      this.socket.on('notification', notif => {
+      this.socket.on('notification', (notif) => {
         this.notifications.unshift({
           id: notif.id,
           type: notif.type,
@@ -552,14 +594,14 @@ export default {
             minute: '2-digit',
             day: '2-digit',
             month: 'short',
-            year: 'numeric'
+            year: 'numeric',
           }),
-          isRead: false
+          isRead: false,
         })
         this.updateFilterCounts()
       })
-    }
-  }
+    },
+  },
 }
 </script>
 

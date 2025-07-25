@@ -4,7 +4,13 @@
     <div class="header">
       <button @click="goBack" class="back-btn">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path
+            d="M19 12H5M12 19l-7-7 7-7"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
         Kembali
       </button>
@@ -29,21 +35,29 @@
         <div class="post-header">
           <div class="user-info">
             <div class="avatar">
-              <img v-if="post.author?.avatar" :src="getAvatarUrl(post.author.avatar)" :alt="post.author?.username">
+              <img
+                v-if="post.author?.avatar"
+                :src="getAvatarUrl(post.author.avatar)"
+                :alt="post.author?.username"
+              />
               <div v-else class="avatar-placeholder">
-                {{ (post.author?.username || post.author?.fullName || 'U').charAt(0).toUpperCase() }}
+                {{
+                  (post.author?.username || post.author?.fullName || 'U').charAt(0).toUpperCase()
+                }}
               </div>
             </div>
             <div class="user-details">
-              <h3 class="username">{{ post.author?.fullName || post.author?.username || 'Unknown User' }}</h3>
+              <h3 class="username">
+                {{ post.author?.fullName || post.author?.username || 'Unknown User' }}
+              </h3>
               <p class="timestamp">{{ formatTimestamp(post.createdAt) }}</p>
             </div>
           </div>
           <button class="menu-btn">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="1" fill="currentColor"/>
-              <circle cx="19" cy="12" r="1" fill="currentColor"/>
-              <circle cx="5" cy="12" r="1" fill="currentColor"/>
+              <circle cx="12" cy="12" r="1" fill="currentColor" />
+              <circle cx="19" cy="12" r="1" fill="currentColor" />
+              <circle cx="5" cy="12" r="1" fill="currentColor" />
             </svg>
           </button>
         </div>
@@ -54,7 +68,7 @@
 
           <!-- Post image if exists -->
           <div v-if="post.image" class="post-image">
-            <img :src="post.image" :alt="'Post by ' + (post.author?.username || 'user')">
+            <img :src="post.image" :alt="'Post by ' + (post.author?.username || 'user')" />
           </div>
         </div>
 
@@ -173,7 +187,11 @@
         <!-- Add comment -->
         <div class="add-comment">
           <div class="avatar">
-            <img v-if="currentUserAvatar" :src="getAvatarUrl(currentUserAvatar)" :alt="currentUserName">
+            <img
+              v-if="currentUserAvatar"
+              :src="getAvatarUrl(currentUserAvatar)"
+              :alt="currentUserName"
+            />
             <div v-else class="avatar-placeholder">
               {{ (currentUserName || 'A').charAt(0).toUpperCase() }}
             </div>
@@ -186,11 +204,7 @@
               rows="2"
               @keyup.enter="submitComment"
             ></textarea>
-            <button
-              @click="submitComment"
-              class="comment-submit"
-              :disabled="!newComment.trim()"
-            >
+            <button @click="submitComment" class="comment-submit" :disabled="!newComment.trim()">
               Kirim
             </button>
           </div>
@@ -200,14 +214,24 @@
         <div v-if="post.comments && post.comments.length > 0" class="comments-list">
           <div v-for="(comment, index) in post.comments" :key="comment.id || index" class="comment">
             <div class="avatar">
-              <img v-if="comment.author?.avatar" :src="getAvatarUrl(comment.author.avatar)" :alt="comment.author?.username">
+              <img
+                v-if="comment.author?.avatar"
+                :src="getAvatarUrl(comment.author.avatar)"
+                :alt="comment.author?.username"
+              />
               <div v-else class="avatar-placeholder">
-                {{ (comment.author?.username || comment.author?.fullName || 'U').charAt(0).toUpperCase() }}
+                {{
+                  (comment.author?.username || comment.author?.fullName || 'U')
+                    .charAt(0)
+                    .toUpperCase()
+                }}
               </div>
             </div>
             <div class="comment-content">
               <div class="comment-header">
-                <span class="comment-username">{{ comment.author?.fullName || comment.author?.username || 'Unknown' }}</span>
+                <span class="comment-username">{{
+                  comment.author?.fullName || comment.author?.username || 'Unknown'
+                }}</span>
                 <span class="comment-time">{{ formatTimestamp(comment.createdAt) }}</span>
               </div>
               <p class="comment-text">{{ comment.content }}</p>
@@ -292,7 +316,7 @@
 
 <script>
 import { getAvatarUrl } from '@/utils/avatar'
-
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 export default {
   name: 'PostDetail',
   data() {
@@ -316,7 +340,7 @@ export default {
       // Share modal states
       showShareModal: false,
       shareLink: '',
-      isCopied: false
+      isCopied: false,
     }
   },
   mounted() {
@@ -336,11 +360,11 @@ export default {
         this.error = null
 
         const token = localStorage.getItem('token')
-        const headers = token ? { 'Authorization': `Bearer ${token}` } : {}
+        const headers = token ? { Authorization: `Bearer ${token}` } : {}
 
         // Gunakan endpoint backend Anda
-        const response = await fetch(`http://localhost:5000/api/posts/${this.$route.params.id}`, {
-          headers
+        const response = await fetch(`${API_BASE_URL}/api/posts/${this.$route.params.id}`, {
+          headers,
         })
 
         console.log('Response status:', response.status) // Debug
@@ -362,17 +386,17 @@ export default {
         this.commentCount = this.post.comments ? this.post.comments.length : 0
         // Check if current user liked this post
         // this.isLiked = this.post.likes?.some(like => like.userId === currentUserId)
-
       } catch (error) {
         console.error('Error fetching post:', error)
         this.error = error.message || 'Gagal memuat post'
       } finally {
         this.loading = false
-        console.log('Final states:', { // Debug log
+        console.log('Final states:', {
+          // Debug log
           loading: this.loading,
           error: this.error,
           post: this.post,
-          hasPost: !!this.post
+          hasPost: !!this.post,
         })
       }
     },
@@ -382,12 +406,12 @@ export default {
       const postId = this.post.id
       const token = localStorage.getItem('token')
       try {
-        const res = await fetch(`http://localhost:5000/api/posts/${postId}/like`, {
+        const res = await fetch(`${API_BASE_URL}/api/posts/${postId}/like`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         })
         if (!res.ok) throw new Error('Gagal menyimpan like')
         const updatedPost = await res.json()
@@ -407,13 +431,13 @@ export default {
       try {
         const token = localStorage.getItem('token')
         if (!token) throw new Error('Token tidak ditemukan')
-        const res = await fetch(`http://localhost:5000/api/posts/${this.post.id}/comments`, {
+        const res = await fetch(`${API_BASE_URL}/api/posts/${this.post.id}/comments`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ content: this.newComment })
+          body: JSON.stringify({ content: this.newComment }),
         })
         if (!res.ok) throw new Error('Gagal mengirim komentar')
         const updatedPost = await res.json()
@@ -512,8 +536,8 @@ export default {
 
     goBack() {
       this.$router.go(-1)
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -554,7 +578,9 @@ export default {
   color: #90caf9;
 }
 
-.loading, .error, .not-found {
+.loading,
+.error,
+.not-found {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -574,8 +600,12 @@ export default {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error {
@@ -1061,7 +1091,8 @@ export default {
     padding: 16px;
   }
 
-  .post-card, .comments-section {
+  .post-card,
+  .comments-section {
     padding: 16px;
   }
 

@@ -10,7 +10,7 @@
           <router-link
             class="username"
             :to="{ name: 'UserProfile', params: { username: post.author?.username } }"
-            style="color:inherit;text-decoration:none;cursor:pointer"
+            style="color: inherit; text-decoration: none; cursor: pointer"
           >
             {{ post.author?.fullName || post.author?.username || '-' }}
           </router-link>
@@ -20,9 +20,7 @@
       <div class="more-options">
         <span v-if="post.isReply">Balas</span>
         <div v-else class="menu-container">
-          <button class="menu-btn" @click="toggleMenu" ref="menuButton">
-            •••
-          </button>
+          <button class="menu-btn" @click="toggleMenu" ref="menuButton">•••</button>
 
           <!-- Dropdown Menu -->
           <div v-if="showMenu" class="dropdown-menu">
@@ -44,13 +42,13 @@
         <div class="modal-header">
           <button class="cancel-btn" @click="closeReportModal">Batal</button>
           <h3>Laporkan Postingan</h3>
-          <button class="submit-btn" @click="submitReport" :disabled="!selectedReason">Kirim</button>
+          <button class="submit-btn" @click="submitReport" :disabled="!selectedReason">
+            Kirim
+          </button>
         </div>
 
         <div class="modal-body">
-          <p class="report-description">
-            Mengapa Anda melaporkan postingan ini?
-          </p>
+          <p class="report-description">Mengapa Anda melaporkan postingan ini?</p>
 
           <div class="report-reasons">
             <div
@@ -217,10 +215,26 @@
               </div>
               <div class="comment-content">
                 <div class="comment-header">
-                  <div class="comment-username">{{ comment.author?.fullName || comment.author?.username || '-' }}</div>
-                  <div class="comment-timestamp">{{ comment.createdAt ? new Date(comment.createdAt).toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short', year: 'numeric' }) : (comment.time || '-') }}</div>
+                  <div class="comment-username">
+                    {{ comment.author?.fullName || comment.author?.username || '-' }}
+                  </div>
+                  <div class="comment-timestamp">
+                    {{
+                      comment.createdAt
+                        ? new Date(comment.createdAt).toLocaleString('id-ID', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })
+                        : comment.time || '-'
+                    }}
+                  </div>
                 </div>
-                <div class="comment-text">{{ comment.content || comment.text || comment.comment || '-' }}</div>
+                <div class="comment-text">
+                  {{ comment.content || comment.text || comment.comment || '-' }}
+                </div>
 
                 <!-- Action buttons untuk setiap komentar -->
                 <div class="comment-actions">
@@ -277,10 +291,15 @@
 
         <div class="comment-modal-footer">
           <div class="comment-input-container">
-            <img v-if="currentUserAvatar" :src="currentUserAvatar" alt="User Avatar" class="comment-avatar-input" />
-<div v-else class="comment-avatar-placeholder">
-  {{ (currentUserName || 'U').charAt(0).toUpperCase() }}
-</div>
+            <img
+              v-if="currentUserAvatar"
+              :src="currentUserAvatar"
+              alt="User Avatar"
+              class="comment-avatar-input"
+            />
+            <div v-else class="comment-avatar-placeholder">
+              {{ (currentUserName || 'U').charAt(0).toUpperCase() }}
+            </div>
             <div class="comment-form">
               <input
                 type="text"
@@ -364,6 +383,8 @@
 
 <script>
 import { getAvatarUrl } from '@/utils/avatar'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 export default {
   name: 'FeedItem',
   props: {
@@ -389,7 +410,7 @@ export default {
       likedComments: {},
 
       currentUserName: '',
-    currentUserAvatar: null,
+      currentUserAvatar: null,
 
       // Menu and Report states
       showMenu: false,
@@ -402,75 +423,75 @@ export default {
           id: 'spam',
           title: 'Spam',
           description: 'Postingan yang tidak relevan atau mengganggu',
-          icon: 'fa fa-ban'
+          icon: 'fa fa-ban',
         },
         {
           id: 'harassment',
           title: 'Pelecehan atau Bullying',
           description: 'Konten yang menyerang atau melecehkan seseorang',
-          icon: 'fa fa-exclamation-triangle'
+          icon: 'fa fa-exclamation-triangle',
         },
         {
           id: 'hate-speech',
           title: 'Ujaran Kebencian',
           description: 'Konten yang mengandung diskriminasi atau kebencian',
-          icon: 'fa fa-angry'
+          icon: 'fa fa-angry',
         },
         {
           id: 'violence',
           title: 'Kekerasan',
           description: 'Konten yang mengandung kekerasan atau ancaman',
-          icon: 'fa fa-fist-raised'
+          icon: 'fa fa-fist-raised',
         },
         {
           id: 'inappropriate',
           title: 'Konten Tidak Pantas',
           description: 'Konten dewasa atau tidak sesuai komunitas',
-          icon: 'fa fa-eye-slash'
+          icon: 'fa fa-eye-slash',
         },
         {
           id: 'misinformation',
           title: 'Informasi Palsu',
           description: 'Menyebarkan berita atau informasi yang salah',
-          icon: 'fa fa-times-circle'
+          icon: 'fa fa-times-circle',
         },
         {
           id: 'other',
           title: 'Lainnya',
           description: 'Alasan lain yang tidak tercantum di atas',
-          icon: 'fa fa-ellipsis-h'
-        }
-      ]
+          icon: 'fa fa-ellipsis-h',
+        },
+      ],
     }
   },
   methods: {
     // Existing methods
     setCurrentUser() {
-    try {
-      const user = JSON.parse(localStorage.getItem('user'))
-      this.currentUserName = user?.fullName || user?.username || 'User'
-      this.currentUserAvatar = user?.avatar ? getAvatarUrl(user.avatar) : null
-    } catch (e) {
-      this.currentUserName = 'User'
-      this.currentUserAvatar = null
-    }
-  },
+      try {
+        const user = JSON.parse(localStorage.getItem('user'))
+        this.currentUserName = user?.fullName || user?.username || 'User'
+        this.currentUserAvatar = user?.avatar ? getAvatarUrl(user.avatar) : null
+      } catch (e) {
+        this.currentUserName = 'User'
+        this.currentUserAvatar = null
+      }
+    },
 
     async toggleLike() {
       const postId = this.post.id
       const token = localStorage.getItem('token')
       try {
-        const res = await fetch(`http://localhost:5000/api/posts/${postId}/like`, {
+        const res = await fetch(`${API_BASE_URL}/api/posts/${postId}/like`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         })
         if (!res.ok) throw new Error('Gagal menyimpan like')
         const updatedPost = await res.json()
         this.likeCount = updatedPost.likes ? updatedPost.likes.length : 0
-        this.isLiked = updatedPost.likes.some(like => like.id === this.$root.currentUserId)
+        this.isLiked = updatedPost.likes.some((like) => like.id === this.$root.currentUserId)
       } catch (err) {
         alert(err.message || 'Gagal menyimpan like')
       }
@@ -497,13 +518,13 @@ export default {
       try {
         const token = localStorage.getItem('token')
         if (!token) throw new Error('Token tidak ditemukan')
-        const res = await fetch(`http://localhost:5000/api/posts/${this.post.id}/comments`, {
+        const res = await fetch(`${API_BASE_URL}/api/posts/${this.post.id}/comments`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ content: this.newComment })
+          body: JSON.stringify({ content: this.newComment }),
         })
         if (!res.ok) throw new Error('Gagal mengirim komentar')
         const updatedPost = await res.json()
@@ -601,17 +622,17 @@ export default {
 
       try {
         const token = localStorage.getItem('token')
-        const res = await fetch('http://localhost:5000/api/reports', {
+        const res = await fetch(`${API_BASE_URL}/api/reports`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             postId: this.post.id,
             reason: this.selectedReason,
-            details: this.reportDetails
-          })
+            details: this.reportDetails,
+          }),
         })
 
         if (!res.ok) throw new Error('Gagal mengirim laporan')
@@ -786,7 +807,8 @@ export default {
   margin: 0;
 }
 
-.cancel-btn, .submit-btn {
+.cancel-btn,
+.submit-btn {
   background: none;
   border: none;
   color: #8f8f9d;

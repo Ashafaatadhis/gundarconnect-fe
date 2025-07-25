@@ -21,8 +21,12 @@
           </div>
         </div>
         <h1 class="brand-title">
-          <span class="letter" v-for="(letter, index) in 'GundarConnect'.split('')"
-                :key="index" :style="{ animationDelay: `${index * 0.1}s` }">
+          <span
+            class="letter"
+            v-for="(letter, index) in 'GundarConnect'.split('')"
+            :key="index"
+            :style="{ animationDelay: `${index * 0.1}s` }"
+          >
             {{ letter }}
           </span>
         </h1>
@@ -42,7 +46,7 @@
         </div>
 
         <form @submit.prevent="handleLogin" class="login-form">
-          <div class="form-group" :class="{ 'focused': focusedField === 'username' }">
+          <div class="form-group" :class="{ focused: focusedField === 'username' }">
             <label for="username">USERNAME</label>
             <div class="input-container">
               <div class="input-icon">👤</div>
@@ -50,7 +54,7 @@
                 type="text"
                 id="username"
                 v-model="form.username"
-                :class="{ 'error': errors.username, 'valid': form.username && !errors.username }"
+                :class="{ error: errors.username, valid: form.username && !errors.username }"
                 placeholder="NPM atau email@student.gunadarma.ac.id"
                 @input="clearError('username')"
                 @focus="focusedField = 'username'"
@@ -66,7 +70,7 @@
             </transition>
           </div>
 
-          <div class="form-group" :class="{ 'focused': focusedField === 'password' }">
+          <div class="form-group" :class="{ focused: focusedField === 'password' }">
             <label for="password">PASSWORD</label>
             <div class="input-container">
               <div class="input-icon">🔒</div>
@@ -74,17 +78,13 @@
                 :type="showPassword ? 'text' : 'password'"
                 id="password"
                 v-model="form.password"
-                :class="{ 'error': errors.password, 'valid': form.password && !errors.password }"
+                :class="{ error: errors.password, valid: form.password && !errors.password }"
                 placeholder="Masukkan password Anda"
                 @input="clearError('password')"
                 @focus="focusedField = 'password'"
                 @blur="focusedField = ''"
               />
-              <button
-                type="button"
-                class="password-toggle"
-                @click="togglePassword"
-              >
+              <button type="button" class="password-toggle" @click="togglePassword">
                 <transition name="icon-flip" mode="out-in">
                   <span v-if="showPassword" key="hide">🙈</span>
                   <span v-else key="show">👁️</span>
@@ -104,7 +104,7 @@
             type="submit"
             class="login-btn"
             :disabled="isLoading"
-            :class="{ 'loading': isLoading }"
+            :class="{ loading: isLoading }"
           >
             <span class="btn-content">
               <transition name="loading-fade" mode="out-in">
@@ -137,7 +137,15 @@
                   <span v-else>ℹ️</span>
                 </transition>
               </div>
-              <h3>{{ messageType === 'success' ? 'Berhasil!' : messageType === 'error' ? 'Oops!' : 'Info' }}</h3>
+              <h3>
+                {{
+                  messageType === 'success'
+                    ? 'Berhasil!'
+                    : messageType === 'error'
+                      ? 'Oops!'
+                      : 'Info'
+                }}
+              </h3>
             </div>
             <p class="message-text">{{ message }}</p>
             <button @click="closeMessage" class="close-btn">
@@ -155,8 +163,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user' // ⬅️ Import user store
-
-const API_URL = 'http://localhost:5000/api'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 export default {
   name: 'LoginPage',
@@ -166,12 +173,12 @@ export default {
 
     const form = reactive({
       username: '',
-      password: ''
+      password: '',
     })
 
     const errors = reactive({
       username: '',
-      password: ''
+      password: '',
     })
 
     const showPassword = ref(false)
@@ -198,10 +205,6 @@ export default {
       } else {
         const isValidNPM = /^\d{8}$/.test(form.username)
         const isValidEmail = form.username.includes('@student.gunadarma.ac.id')
-        if (!isValidNPM && !isValidEmail) {
-          errors.username = 'Gunakan NPM (8 digit) atau email student Gunadarma'
-          isValid = false
-        }
       }
 
       if (!form.password.trim()) {
@@ -220,13 +223,13 @@ export default {
       isLoading.value = true
 
       try {
-        const response = await fetch(`${API_URL}/auth/login`, {
+        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             username: form.username,
-            password: form.password
-          })
+            password: form.password,
+          }),
         })
 
         const data = await response.json()
@@ -284,15 +287,11 @@ export default {
       togglePassword,
       clearError,
       showMessage,
-      closeMessage
+      closeMessage,
     }
-  }
+  },
 }
-
-
 </script>
-
-
 
 <style scoped>
 * {
@@ -328,7 +327,7 @@ export default {
 .shape-1 {
   width: 100px;
   height: 100px;
-  background: linear-gradient(45deg, #6B73FF, #9B59B6);
+  background: linear-gradient(45deg, #6b73ff, #9b59b6);
   top: 10%;
   left: 10%;
   animation-delay: 0s;
@@ -337,7 +336,7 @@ export default {
 .shape-2 {
   width: 150px;
   height: 150px;
-  background: linear-gradient(45deg, #FF6B9D, #FF8E8E);
+  background: linear-gradient(45deg, #ff6b9d, #ff8e8e);
   top: 60%;
   right: 15%;
   animation-delay: -5s;
@@ -346,7 +345,7 @@ export default {
 .shape-3 {
   width: 80px;
   height: 80px;
-  background: linear-gradient(45deg, #4FACFE, #00F2FE);
+  background: linear-gradient(45deg, #4facfe, #00f2fe);
   bottom: 20%;
   left: 20%;
   animation-delay: -10s;
@@ -355,7 +354,7 @@ export default {
 .shape-4 {
   width: 120px;
   height: 120px;
-  background: linear-gradient(45deg, #43E97B, #38F9D7);
+  background: linear-gradient(45deg, #43e97b, #38f9d7);
   top: 30%;
   right: 30%;
   animation-delay: -15s;
@@ -364,17 +363,26 @@ export default {
 .shape-5 {
   width: 200px;
   height: 200px;
-  background: linear-gradient(45deg, #FA709A, #FEE140);
+  background: linear-gradient(45deg, #fa709a, #fee140);
   bottom: 10%;
   right: 10%;
   animation-delay: -8s;
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  25% { transform: translateY(-20px) rotate(90deg); }
-  50% { transform: translateY(-40px) rotate(180deg); }
-  75% { transform: translateY(-20px) rotate(270deg); }
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-20px) rotate(90deg);
+  }
+  50% {
+    transform: translateY(-40px) rotate(180deg);
+  }
+  75% {
+    transform: translateY(-20px) rotate(270deg);
+  }
 }
 
 /* Glass Morphism Effect */
@@ -388,13 +396,15 @@ export default {
 /* Brand Side - Updated with new color scheme */
 .brand-side {
   flex: 1;
-  background: linear-gradient(135deg,
-    #0E061A 0%,
-    #1A0B2E 20%,
-    #2E1065 40%,
-    #4C1D95 60%,
-    #6B21A8 80%,
-    #7C3AED 100%);
+  background: linear-gradient(
+    135deg,
+    #0e061a 0%,
+    #1a0b2e 20%,
+    #2e1065 40%,
+    #4c1d95 60%,
+    #6b21a8 80%,
+    #7c3aed 100%
+  );
   display: flex;
   align-items: center;
   justify-content: center;
@@ -455,8 +465,14 @@ export default {
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(1.1); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.1);
+    opacity: 0;
+  }
 }
 
 .logo {
@@ -533,7 +549,7 @@ export default {
   color: #2d3748;
   margin: 0 0 1.5rem 0;
   font-weight: 700;
-  background: linear-gradient(135deg, #0E061A, #7C3AED);
+  background: linear-gradient(135deg, #0e061a, #7c3aed);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -584,7 +600,7 @@ export default {
 }
 
 .form-group.focused label {
-  color: #7C3AED;
+  color: #7c3aed;
 }
 
 .input-container {
@@ -636,7 +652,7 @@ export default {
   left: 50%;
   width: 0;
   height: 2px;
-  background: linear-gradient(90deg, #0E061A, #7C3AED);
+  background: linear-gradient(90deg, #0e061a, #7c3aed);
   transition: all 0.4s ease;
   transform: translateX(-50%);
   border-radius: 1px;
@@ -691,7 +707,7 @@ export default {
 
 /* Login Button */
 .login-btn {
-  background: linear-gradient(135deg, #0E061A 0%, #7C3AED 100%);
+  background: linear-gradient(135deg, #0e061a 0%, #7c3aed 100%);
   color: white;
   border: none;
   padding: 1.2rem;
@@ -710,7 +726,7 @@ export default {
 .login-btn:hover:not(:disabled) {
   transform: translateY(-3px);
   box-shadow: 0 12px 40px rgba(124, 58, 237, 0.4);
-  background: linear-gradient(135deg, #1A0B2E 0%, #8B5CF6 100%);
+  background: linear-gradient(135deg, #1a0b2e 0%, #8b5cf6 100%);
 }
 
 .login-btn:active:not(:disabled) {
@@ -732,7 +748,8 @@ export default {
   gap: 0.75rem;
 }
 
-.loading-content, .login-content {
+.loading-content,
+.login-content {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -760,7 +777,9 @@ export default {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.2);
   transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
+  transition:
+    width 0.6s,
+    height 0.6s;
 }
 
 .login-btn:active .btn-ripple {
@@ -837,7 +856,7 @@ export default {
 }
 
 .close-btn {
-  background: linear-gradient(135deg, #0E061A, #7C3AED);
+  background: linear-gradient(135deg, #0e061a, #7c3aed);
   color: white;
   border: none;
   padding: 0.75rem 2rem;
@@ -864,7 +883,9 @@ export default {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.2);
   transform: translate(-50%, -50%);
-  transition: width 0.4s, height 0.4s;
+  transition:
+    width 0.4s,
+    height 0.4s;
 }
 
 .close-btn:active .btn-ripple-small {
@@ -874,12 +895,17 @@ export default {
 
 /* Animations */
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Transitions */
-.error-slide-enter-active, .error-slide-leave-active {
+.error-slide-enter-active,
+.error-slide-leave-active {
   transition: all 0.3s ease;
 }
 
@@ -893,29 +919,35 @@ export default {
   transform: translateY(-10px);
 }
 
-.icon-flip-enter-active, .icon-flip-leave-active {
+.icon-flip-enter-active,
+.icon-flip-leave-active {
   transition: all 0.3s ease;
 }
 
-.icon-flip-enter-from, .icon-flip-leave-to {
+.icon-flip-enter-from,
+.icon-flip-leave-to {
   opacity: 0;
   transform: rotateY(90deg);
 }
 
-.loading-fade-enter-active, .loading-fade-leave-active {
+.loading-fade-enter-active,
+.loading-fade-leave-active {
   transition: all 0.3s ease;
 }
 
-.loading-fade-enter-from, .loading-fade-leave-to {
+.loading-fade-enter-from,
+.loading-fade-leave-to {
   opacity: 0;
   transform: scale(0.8);
 }
 
-.modal-fade-enter-active, .modal-fade-leave-active {
+.modal-fade-enter-active,
+.modal-fade-leave-active {
   transition: all 0.3s ease;
 }
 
-.modal-fade-enter-from, .modal-fade-leave-to {
+.modal-fade-enter-from,
+.modal-fade-leave-to {
   opacity: 0;
 }
 
@@ -947,9 +979,15 @@ export default {
 }
 
 @keyframes iconBounce {
-  0% { transform: scale(0); }
-  50% { transform: scale(1.3); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* Responsive Design */
@@ -1001,8 +1039,7 @@ export default {
     gap: 0.5rem;
   }
 
-
-.form-group input {
+  .form-group input {
     padding: 0.75rem 0.75rem 0.75rem 2.5rem;
   }
 

@@ -14,16 +14,18 @@
             <div class="profile-avatar-container">
               <div class="profile-avatar">
                 <template v-if="user && user.avatar">
-                  <img :src="getAvatarUrl(user.avatar)" alt="Avatar" style="width:150px;height:150px;border-radius:50%" />
+                  <img
+                    :src="getAvatarUrl(user.avatar)"
+                    alt="Avatar"
+                    style="width: 150px; height: 150px; border-radius: 50%"
+                  />
                 </template>
                 <template v-else>
-                  <div class="avatar-placeholder">
-                    <svg width="60" height="60" fill="currentColor" viewBox="0 0 24 24">
-                      <path
-                        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                      />
-                    </svg>
-                  </div>
+                  <img
+                    src="/profile.png"
+                    alt="Default Avatar"
+                    style="width: 150px; height: 150px; border-radius: 50%"
+                  />
                 </template>
               </div>
             </div>
@@ -33,13 +35,11 @@
                 <h1 class="profile-name">{{ user.fullName || '-' }}</h1>
                 <p class="profile-username">@{{ user.username || '-' }}</p>
                 <p class="profile-bio">{{ user.bio || '-' }}</p>
-                <p class="profile-major">{{ user.major || '-' }}</p>
               </template>
               <template v-else>
                 <h1 class="profile-name">-</h1>
                 <p class="profile-username">-</p>
                 <p class="profile-bio">-</p>
-                <p class="profile-major">-</p>
               </template>
             </div>
 
@@ -49,7 +49,9 @@
                 <!-- Logout Button -->
                 <button class="btn-logout" @click="showLogoutConfirm = true" title="Logout">
                   <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                    <path
+                      d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+                    />
                   </svg>
                   Logout
                 </button>
@@ -57,22 +59,44 @@
               <template v-else>
                 <!-- Follow/Unfollow Button -->
                 <button
-                  :class="['btn-follow', { 'following': followState.isFollowing }]"
+                  :class="['btn-follow', { following: followState.isFollowing }]"
                   @click="toggleFollow"
                   :disabled="followState.loading"
                 >
-                  <svg v-if="followState.loading" width="18" height="18" fill="currentColor" viewBox="0 0 24 24" class="loading-icon">
-                    <path d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8A8 8 0 0 1 12 20Z" opacity=".5"/>
-                    <path d="M20 12h2A10 10 0 0 0 12 2V4A8 8 0 0 1 20 12Z"/>
+                  <svg
+                    v-if="followState.loading"
+                    width="18"
+                    height="18"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    class="loading-icon"
+                  >
+                    <path
+                      d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8A8 8 0 0 1 12 20Z"
+                      opacity=".5"
+                    />
+                    <path d="M20 12h2A10 10 0 0 0 12 2V4A8 8 0 0 1 20 12Z" />
                   </svg>
-                  <svg v-else-if="followState.isFollowing" width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  <svg
+                    v-else-if="followState.isFollowing"
+                    width="18"
+                    height="18"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                   <svg v-else width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    <path d="M12 8V6m0 4v2m-2-2h2m0 0h2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    <path d="M12 8V6m0 4v2m-2-2h2m0 0h2" stroke="currentColor" stroke-width="2" />
                   </svg>
-                  {{ followState.loading ? 'Loading...' : (followState.isFollowing ? 'Unfollow' : 'Follow') }}
+                  {{
+                    followState.loading
+                      ? 'Loading...'
+                      : followState.isFollowing
+                        ? 'Unfollow'
+                        : 'Follow'
+                  }}
                 </button>
               </template>
               <button class="btn-secondary" @click="showShareModal = true">Share</button>
@@ -129,7 +153,9 @@
           <h2 class="modal-title">Edit Profile</h2>
           <button class="modal-close" @click="showEditModal = false">
             <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+              <path
+                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+              ></path>
             </svg>
           </button>
         </div>
@@ -140,14 +166,34 @@
               <label class="form-label">Profile Picture</label>
               <div class="avatar-upload">
                 <div class="avatar-preview">
-                  <img v-if="avatarPreview" :src="avatarPreview" alt="Preview" style="width:40px;height:40px;border-radius:50%" />
-                  <img v-else-if="user && user.avatar" :src="getAvatarUrl(user.avatar)" alt="Avatar" style="width:40px;height:40px;border-radius:50%" />
+                  <img
+                    v-if="avatarPreview"
+                    :src="avatarPreview"
+                    alt="Preview"
+                    style="width: 40px; height: 40px; border-radius: 50%"
+                  />
+                  <img
+                    v-else-if="user && user.avatar"
+                    :src="getAvatarUrl(user.avatar)"
+                    alt="Avatar"
+                    style="width: 40px; height: 40px; border-radius: 50%"
+                  />
                   <svg v-else width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+                    <path
+                      d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                    ></path>
                   </svg>
                 </div>
-                <button type="button" class="upload-btn" @click="$refs.fileInput.click()">Change Photo</button>
-                <input type="file" ref="fileInput" style="display:none" accept="image/*" @change="handleFileChange" />
+                <button type="button" class="upload-btn" @click="$refs.fileInput.click()">
+                  Change Photo
+                </button>
+                <input
+                  type="file"
+                  ref="fileInput"
+                  style="display: none"
+                  accept="image/*"
+                  @change="handleFileChange"
+                />
               </div>
             </div>
 
@@ -277,11 +323,16 @@
           <div class="logout-content">
             <div class="logout-icon">
               <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                <path
+                  d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+                />
               </svg>
             </div>
             <h3>Are you sure you want to logout?</h3>
-            <p>You will be redirected to the login page and need to sign in again to access your account.</p>
+            <p>
+              You will be redirected to the login page and need to sign in again to access your
+              account.
+            </p>
           </div>
         </div>
 
@@ -298,13 +349,12 @@
     v-if="user && user.avatar"
     :src="getAvatarUrl(user.avatar)"
     alt="Avatar"
-    style="width:40px;height:40px;border-radius:50%"
+    style="width: 40px; height: 40px; border-radius: 50%"
     @error="handleImageError"
   />
 
   <!-- Fallback jika tidak ada avatar -->
-  <div v-else style="width:40px;height:40px;border-radius:50%;background:#ccc;"></div>
-
+  <div v-else style="width: 40px; height: 40px; border-radius: 50%; background: #ccc"></div>
 </template>
 
 <script setup>
@@ -315,8 +365,8 @@ import sidebar from './sidebar.vue'
 import PostCard from './profile/PostCard.vue'
 import AboutInfo from './profile/AboutInfo.vue'
 import { getAvatarUrl } from '@/utils/avatar'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 import UserAvatar from '@/components/UserAvatar.vue'
-
 
 const route = useRoute()
 const router = useRouter()
@@ -332,34 +382,31 @@ const editForm = ref({
   name: '',
   username: '',
   bio: '',
-  major: ''
 })
 
 // Follow/Unfollow state menggunakan reactive object untuk memastikan reactivity
 const followState = reactive({
   isFollowing: false,
-  loading: false
+  loading: false,
 })
 
 const followStats = reactive({
   followers: 0,
-  following: 0
+  following: 0,
 })
 
 const tabs = [
   {
     id: 'posts',
     label: 'Posts',
-    icon: 'div'
+    icon: 'div',
   },
   {
     id: 'about',
     label: 'About',
-    icon: 'div'
-  }
+    icon: 'div',
+  },
 ]
-
-
 
 // Get current user from token
 const getCurrentUser = () => {
@@ -382,10 +429,10 @@ const checkFollowStatus = async (targetUserId) => {
     const token = localStorage.getItem('token')
     if (!token) return
 
-    const response = await fetch(`http://localhost:5000/api/follow/status/${targetUserId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/follow/status/${targetUserId}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
 
     if (response.ok) {
@@ -404,10 +451,10 @@ const getFollowStats = async (targetUserId) => {
     const token = localStorage.getItem('token')
     if (!token) return
 
-    const response = await fetch(`http://localhost:5000/api/follow/stats/${targetUserId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/follow/stats/${targetUserId}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     })
 
     if (response.ok) {
@@ -420,76 +467,75 @@ const getFollowStats = async (targetUserId) => {
       console.error('❌ Failed to fetch follow stats:', await response.text())
     }
   } catch (error) {
-    console.error('Error getting follow stats:', error)
-  }
+    console.error('Error getting follow stats:', error)
+  }
 }
 
 // Toggle follow/unfollow - perbaikan utama ada di sini
 const toggleFollow = async () => {
-  if (!user.value || followState.loading) return;
+  if (!user.value || followState.loading) return
 
   // Set loading state
-  followState.loading = true;
+  followState.loading = true
 
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token')
     if (!token) {
-      console.error('No token found');
-      return;
+      console.error('No token found')
+      return
     }
 
     // Simpan state SEBELUM diubah
-    const wasFollowing = followState.isFollowing;
-    const endpoint = wasFollowing ? 'unfollow' : 'follow';
+    const wasFollowing = followState.isFollowing
+    const endpoint = wasFollowing ? 'unfollow' : 'follow'
 
-    console.log('Attempting to', endpoint, 'user. Current state:', wasFollowing);
+    console.log('Attempting to', endpoint, 'user. Current state:', wasFollowing)
 
-    const response = await fetch(`http://localhost:5000/api/follow/${endpoint}`, {
+    const response = await fetch(`${API_BASE_URL}/api/follow/${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        followingId: user.value.id
-      })
-    });
+        followingId: user.value.id,
+      }),
+    })
 
     if (response.ok) {
-      const data = await response.json();
-      console.log('Server response:', data);
+      const data = await response.json()
+      console.log('Server response:', data)
 
       // Update state langsung setelah response berhasil
-      followState.isFollowing = !wasFollowing;
+      followState.isFollowing = !wasFollowing
 
       // Update followers count berdasarkan aksi yang dilakukan
       if (wasFollowing) {
         // Jika sebelumnya following (sekarang unfollow), kurangi followers
-        followStats.followers = Math.max(0, followStats.followers - 1);
+        followStats.followers = Math.max(0, followStats.followers - 1)
       } else {
         // Jika sebelumnya tidak following (sekarang follow), tambah followers
-        followStats.followers += 1;
+        followStats.followers += 1
       }
 
       console.log('State updated successfully:', {
         action: endpoint,
         newFollowState: followState.isFollowing,
-        newFollowersCount: followStats.followers
-      });
+        newFollowersCount: followStats.followers,
+      })
 
       // Force Vue to re-render dengan nextTick
-      await nextTick();
-
+      await nextTick()
     } else {
-      const errorData = await response.json();
-      console.error('Follow action failed:', errorData.message);
+      const errorData = await response.json()
+      console.error('Follow action failed:', errorData.message)
     }
   } catch (error) {
-    console.error('Error in toggleFollow:', error);
+    console.error('Error in toggleFollow:', error)
   } finally {
-    followState.loading = false;
+    followState.loading = false
   }
-};
+}
 
 // Fetch profile data
 const fetchProfile = async () => {
@@ -513,10 +559,10 @@ const fetchProfile = async () => {
     if (!targetUsername) {
       console.log('No target username, fetching current user profile')
       try {
-        const response = await fetch(`http://localhost:5000/api/profile/${currentUser.id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/profile/${currentUser.id}`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
         })
 
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
@@ -536,10 +582,10 @@ const fetchProfile = async () => {
 
     // Fetch profile by username
     console.log('Fetching profile for username:', targetUsername)
-    const response = await fetch(`http://localhost:5000/api/profile/username/${targetUsername}`, {
+    const response = await fetch(`${API_BASE_URL}/api/profile/username/${targetUsername}`, {
       headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
     })
 
     console.log('Profile response status:', response.status)
@@ -551,10 +597,10 @@ const fetchProfile = async () => {
       // If username not found and it's meant to be current user, try ID
       if (response.status === 404 && currentUser) {
         console.log('Username not found, trying with user ID:', currentUser.id)
-        const idResponse = await fetch(`http://localhost:5000/api/profile/${currentUser.id}`, {
+        const idResponse = await fetch(`${API_BASE_URL}/api/profile/${currentUser.id}`, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
         })
 
         if (!idResponse.ok) {
@@ -593,10 +639,10 @@ const fetchProfile = async () => {
       await checkFollowStatus(data.user.id) // ✅ Perbarui status follow
       await getFollowStats(data.user.id)
       console.log('Stats fetched:', {
-  followersFromBackend: data.followers,
-  followingFromBackend: data.following,
-  updatedState: followStats
-})
+        followersFromBackend: data.followers,
+        followingFromBackend: data.following,
+        updatedState: followStats,
+      })
     } else if (currentUser && data.user.id === currentUser.id) {
       await getFollowStats(data.user.id)
     }
@@ -607,13 +653,11 @@ const fetchProfile = async () => {
         name: data.user.fullName || '',
         username: data.user.username || '',
         bio: data.user.bio || '',
-        major: data.user.major || ''
       }
     }
 
     // 🔍 Debugging
     console.log('✅ isFollowing after fetchProfile:', isFollowing.value)
-
   } catch (error) {
     console.error('Error in fetchProfile:', error)
     user.value = null
@@ -621,7 +665,6 @@ const fetchProfile = async () => {
     isFollowing.value = false
   }
 }
-
 
 // Check if current profile is user's own profile
 const isOwnProfile = computed(() => {
@@ -634,7 +677,7 @@ watch(
   () => route.params.username,
   async () => {
     await fetchProfile()
-  }
+  },
 )
 
 // Initialize
@@ -660,7 +703,7 @@ const handleFileChange = (event) => {
 
 // Handle post deletion
 const onPostDeleted = (postId) => {
-  posts.value = posts.value.filter(post => post.id !== postId)
+  posts.value = posts.value.filter((post) => post.id !== postId)
 }
 
 // Handle profile update
@@ -675,21 +718,21 @@ const handleUpdateProfile = async () => {
     console.log('Updating profile with data:', editForm.value)
 
     // Gunakan FormData agar bisa upload file avatar
-    const formData = new FormData();
-    formData.append('fullName', editForm.value.name);
-    formData.append('bio', editForm.value.bio);
+    const formData = new FormData()
+    formData.append('fullName', editForm.value.name)
+    formData.append('bio', editForm.value.bio)
     // Jika ada file avatar baru, tambahkan ke FormData
     if (editForm.value.avatarFile) {
-      formData.append('avatar', editForm.value.avatarFile);
+      formData.append('avatar', editForm.value.avatarFile)
     }
 
-    const response = await fetch('http://localhost:5000/api/profile/update', {
+    const response = await fetch(`${API_BASE_URL}/api/profile/update`, {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
         // Jangan set Content-Type, biarkan browser yang set (agar boundary FormData benar)
       },
-      body: formData
+      body: formData,
     })
 
     if (!response.ok) {

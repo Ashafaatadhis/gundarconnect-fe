@@ -12,9 +12,7 @@
           class="avatar"
           @error="handleAvatarError"
         />
-        <div v-else class="avatar-placeholder">
-          {{ (username || 'U').charAt(0).toUpperCase() }}
-        </div>
+        <img v-else src="/profile.png" alt="Default Avatar" class="avatar" />
       </a>
     </div>
   </div>
@@ -25,6 +23,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import connectLogo from '@/assets/connect.png'
 import defaultAvatar from '@/assets/profile.png'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 const router = useRouter()
 const userData = ref(null)
@@ -37,8 +36,8 @@ const fetchUserData = async () => {
     const token = localStorage.getItem('token')
     if (!token) return
 
-    const response = await fetch(`http://localhost:5000/api/users/profile`, {
-      headers: { Authorization: `Bearer ${token}` }
+    const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
+      headers: { Authorization: `Bearer ${token}` },
     })
 
     if (response.ok) {
@@ -62,13 +61,12 @@ const userAvatar = computed(() => {
 
   // Jika avatar sudah berupa path lengkap (sudah ada 'http' atau '/uploads/')
   if (user.avatar.startsWith('http') || user.avatar.startsWith('/uploads/')) {
-    return `http://localhost:5000${user.avatar}`
+    return `${API_BASE_URL}${user.avatar}`
   }
 
   // Kalau cuma filename doang
-  return `http://localhost:5000/uploads/${user.avatar}`
+  return `${API_BASE_URL}/uploads/${user.avatar}`
 })
-
 
 const handleAvatarError = () => {
   showPlaceholder.value = true

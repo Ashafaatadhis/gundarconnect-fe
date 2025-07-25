@@ -3,7 +3,11 @@
     <div class="post-header">
       <div class="post-avatar">
         <template v-if="post.author && post.author.avatar">
-          <img :src="getAvatarUrl(post.author.avatar)" alt="Avatar" style="width:32px;height:32px;border-radius:50%" />
+          <img
+            :src="getAvatarUrl(post.author.avatar)"
+            alt="Avatar"
+            style="width: 32px; height: 32px; border-radius: 50%"
+          />
         </template>
         <template v-else>
           <div class="avatar-placeholder">
@@ -126,6 +130,8 @@
 import { getAvatarUrl } from '@/utils/avatar'
 import { ref, computed, onMounted } from 'vue'
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 const props = defineProps({
   post: {
     type: Object,
@@ -142,11 +148,19 @@ const newComment = ref('')
 
 const comments = computed(() => {
   if (Array.isArray(props.post.comments)) {
-    return props.post.comments.map(c => ({
+    return props.post.comments.map((c) => ({
       id: c.id || c._id || Math.random(),
       author: c.author?.fullName || c.author?.username || '-',
       text: c.content || c.text || c.comment || '-',
-      time: c.createdAt ? new Date(c.createdAt).toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short', year: 'numeric' }) : (c.time || '-')
+      time: c.createdAt
+        ? new Date(c.createdAt).toLocaleString('id-ID', {
+            hour: '2-digit',
+            minute: '2-digit',
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+          })
+        : c.time || '-',
     }))
   }
   return []
@@ -156,17 +170,17 @@ const toggleLike = async () => {
   const postId = props.post.id
   const token = localStorage.getItem('token')
   try {
-    const res = await fetch(`http://localhost:5000/api/posts/${postId}/like`, {
+    const res = await fetch(`${API_BASE_URL}/api/posts/${postId}/like`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
     })
     if (!res.ok) throw new Error('Gagal menyimpan like')
     const updatedPost = await res.json()
     likeCount.value = updatedPost.likes ? updatedPost.likes.length : 0
-    isLiked.value = updatedPost.likes.some(like => like.id === props.post.currentUserId)
+    isLiked.value = updatedPost.likes.some((like) => like.id === props.post.currentUserId)
   } catch (err) {
     alert(err.message || 'Gagal menyimpan like')
   }
@@ -199,9 +213,9 @@ const deletePost = async () => {
   if (confirm('Are you sure you want to delete this post?')) {
     try {
       const token = localStorage.getItem('token')
-      const res = await fetch(`http://localhost:5000/api/posts/${props.post.id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/posts/${props.post.id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) throw new Error('Failed to delete post')
       emit('deleted', props.post.id)
@@ -461,7 +475,7 @@ const deletePost = async () => {
   top: 30px;
   background: #22223b;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 10;
   min-width: 120px;
   padding: 0.5rem 0;

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 export const useSavedStore = defineStore('saved', {
   state: () => ({
@@ -9,8 +10,8 @@ export const useSavedStore = defineStore('saved', {
       try {
         const token = localStorage.getItem('token')
         if (!token) throw new Error('Token tidak ditemukan')
-        const res = await fetch('http://localhost:5000/api/saved/my', {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const res = await fetch(`${API_BASE_URL}/api/saved/my`, {
+          headers: { Authorization: `Bearer ${token}` },
         })
         console.log('[DEBUG] fetchSavedPosts status:', res.status)
         if (!res.ok) throw new Error('Gagal memuat postingan tersimpan')
@@ -26,9 +27,9 @@ export const useSavedStore = defineStore('saved', {
       try {
         const token = localStorage.getItem('token')
         if (!token) throw new Error('Token tidak ditemukan')
-        const res = await fetch(`http://localhost:5000/api/saved/${postId}/save`, {
+        const res = await fetch(`${API_BASE_URL}/api/saved/${postId}/save`, {
           method: 'POST',
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         })
         if (!res.ok) throw new Error('Gagal menyimpan postingan')
         await this.fetchSavedPosts()
@@ -38,13 +39,13 @@ export const useSavedStore = defineStore('saved', {
       try {
         const token = localStorage.getItem('token')
         if (!token) throw new Error('Token tidak ditemukan')
-        const res = await fetch(`http://localhost:5000/api/saved/${postId}/save`, {
+        const res = await fetch(`${API_BASE_URL}/api/saved/${postId}/save`, {
           method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: { Authorization: `Bearer ${token}` },
         })
         if (!res.ok) throw new Error('Gagal menghapus postingan dari tersimpan')
         await this.fetchSavedPosts()
       } catch (err) {}
-    }
-  }
+    },
+  },
 })

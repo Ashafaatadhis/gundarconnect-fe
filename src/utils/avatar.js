@@ -1,9 +1,11 @@
 // src/utils/avatar.js
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 export function getAvatarUrl(avatar) {
-  if (!avatar) return '/src/assets/profile.png';
-  if (avatar.startsWith('http://') || avatar.startsWith('https://')) return avatar;
+  if (!avatar) return '/src/assets/profile.png'
+  if (avatar.startsWith('http://') || avatar.startsWith('https://')) return avatar
   // Jika sudah diawali /uploads/ atau uploads/, jangan tambah uploads lagi
-  if (avatar.startsWith('/uploads/')) return `http://localhost:5000${avatar}`;
-  if (avatar.startsWith('uploads/')) return `http://localhost:5000/${avatar}`;
-  return `http://localhost:5000/uploads/${avatar}`;
+  if (avatar.startsWith('/uploads/')) return `${API_BASE_URL}${avatar}`
+  if (avatar.startsWith('uploads/')) return `${API_BASE_URL}/${avatar}`
+  return `${API_BASE_URL}/uploads/${avatar}`
 }

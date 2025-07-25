@@ -42,13 +42,13 @@
         <div class="modal-header">
           <button class="cancel-btn" @click="closeReportModal">Batal</button>
           <h3>Laporkan Postingan</h3>
-          <button class="submit-btn" @click="submitReport" :disabled="!selectedReason">Kirim</button>
+          <button class="submit-btn" @click="submitReport" :disabled="!selectedReason">
+            Kirim
+          </button>
         </div>
 
         <div class="modal-body">
-          <p class="report-description">
-            Mengapa Anda melaporkan postingan ini?
-          </p>
+          <p class="report-description">Mengapa Anda melaporkan postingan ini?</p>
 
           <div class="report-reasons">
             <div
@@ -96,11 +96,11 @@
         <div class="modal-body">
           <div class="user-info">
             <div class="user-avatar">
-  <img v-if="currentUserAvatar" :src="currentUserAvatar" alt="User Avatar" />
-  <div v-else class="avatar-placeholder">
-    {{ (currentUserName || 'U').charAt(0).toUpperCase() }}
-  </div>
-</div>
+              <img v-if="currentUserAvatar" :src="currentUserAvatar" alt="User Avatar" />
+              <div v-else class="avatar-placeholder">
+                {{ (currentUserName || 'U').charAt(0).toUpperCase() }}
+              </div>
+            </div>
             <div class="user-details">
               <span class="username">{{ currentUserName }}</span>
             </div>
@@ -119,17 +119,31 @@
             <div class="post-actions">
               <div class="action-buttons">
                 <button class="action-btn" title="Add Image">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                    <polyline points="21,15 16,10 5,21"/>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <polyline points="21,15 16,10 5,21" />
                   </svg>
                 </button>
                 <button class="action-btn" title="Add Poll">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="20" x2="12" y2="10"/>
-                    <line x1="18" y1="20" x2="18" y2="4"/>
-                    <line x1="6" y1="20" x2="6" y2="16"/>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <line x1="12" y1="20" x2="12" y2="10" />
+                    <line x1="18" y1="20" x2="18" y2="4" />
+                    <line x1="6" y1="20" x2="6" y2="16" />
                   </svg>
                 </button>
               </div>
@@ -139,8 +153,15 @@
           <div class="privacy-setting">
             <span class="privacy-text">Anyone can reply</span>
             <button class="privacy-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M6 9l6 6 6-6"/>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M6 9l6 6 6-6" />
               </svg>
             </button>
           </div>
@@ -154,6 +175,7 @@
 import { ref, onMounted, nextTick, computed } from 'vue'
 import FeedItem from './FeedItem.vue'
 import { getAvatarUrl } from '@/utils/avatar'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 export default {
   name: 'FeedList',
@@ -181,81 +203,81 @@ export default {
         id: 'spam',
         title: 'Spam',
         description: 'Postingan yang tidak relevan atau mengganggu',
-        icon: 'fa fa-ban'
+        icon: 'fa fa-ban',
       },
       {
         id: 'harassment',
         title: 'Pelecehan atau Bullying',
         description: 'Konten yang menyerang atau melecehkan seseorang',
-        icon: 'fa fa-exclamation-triangle'
+        icon: 'fa fa-exclamation-triangle',
       },
       {
         id: 'hate-speech',
         title: 'Ujaran Kebencian',
         description: 'Konten yang mengandung diskriminasi atau kebencian',
-        icon: 'fa fa-angry'
+        icon: 'fa fa-angry',
       },
       {
         id: 'violence',
         title: 'Kekerasan',
         description: 'Konten yang mengandung kekerasan atau ancaman',
-        icon: 'fa fa-fist-raised'
+        icon: 'fa fa-fist-raised',
       },
       {
         id: 'inappropriate',
         title: 'Konten Tidak Pantas',
         description: 'Konten dewasa atau tidak sesuai komunitas',
-        icon: 'fa fa-eye-slash'
+        icon: 'fa fa-eye-slash',
       },
       {
         id: 'misinformation',
         title: 'Informasi Palsu',
         description: 'Menyebarkan berita atau informasi yang salah',
-        icon: 'fa fa-times-circle'
+        icon: 'fa fa-times-circle',
       },
       {
         id: 'other',
         title: 'Lainnya',
         description: 'Alasan lain yang tidak tercantum di atas',
-        icon: 'fa fa-ellipsis-h'
-      }
+        icon: 'fa fa-ellipsis-h',
+      },
     ])
 
     // Current user data - TAMBAH INI SAJA
-const currentUser = ref(null)
+    const currentUser = ref(null)
 
-// Get current user info - TAMBAH INI SAJA
-const getCurrentUser = () => {
-  try {
-    const user = localStorage.getItem('user')
-    if (user) {
-      return JSON.parse(user)
+    // Get current user info - TAMBAH INI SAJA
+    const getCurrentUser = () => {
+      try {
+        const user = localStorage.getItem('user')
+        if (user) {
+          return JSON.parse(user)
+        }
+
+        const token = localStorage.getItem('token')
+        if (!token) return null
+
+        return JSON.parse(atob(token.split('.')[1]))
+      } catch (e) {
+        console.error('Error getting user:', e)
+        return null
+      }
     }
 
-    const token = localStorage.getItem('token')
-    if (!token) return null
-
-    return JSON.parse(atob(token.split('.')[1]))
-  } catch (e) {
-    console.error('Error getting user:', e)
-    return null
-  }
-}
-
-// Computed for avatar - TAMBAH INI SAJA
-const currentUserAvatar = computed(() => {
-  const user = currentUser.value || getCurrentUser()
-  if (!user?.avatar) return null
-  return getAvatarUrl(user.avatar)
-})
+    // Computed for avatar - TAMBAH INI SAJA
+    const currentUserAvatar = computed(() => {
+      const user = currentUser.value || getCurrentUser()
+      if (!user?.avatar) return null
+      return getAvatarUrl(user.avatar)
+    })
 
     // Existing functions
     const fetchPosts = async () => {
       try {
         const token = localStorage.getItem('token')
-        const headers = token ? { 'Authorization': `Bearer ${token}` } : {}
-        const res = await fetch('http://localhost:5000/api/posts', {
-          headers
+        const headers = token ? { Authorization: `Bearer ${token}` } : {}
+        const res = await fetch(`${API_BASE_URL}/api/posts`, {
+          headers,
         })
         if (!res.ok) throw new Error('Gagal memuat feed')
         const data = await res.json()
@@ -291,16 +313,16 @@ const currentUserAvatar = computed(() => {
       if (newPost.value.trim()) {
         try {
           const token = localStorage.getItem('token')
-          const res = await fetch('http://localhost:5000/api/posts', {
+          const res = await fetch(`${API_BASE_URL}/api/posts`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
               content: newPost.value,
-              image: ''
-            })
+              image: '',
+            }),
           })
           if (!res.ok) throw new Error('Gagal membuat postingan')
           await fetchPosts()
@@ -324,7 +346,7 @@ const currentUserAvatar = computed(() => {
       const rect = event.target.getBoundingClientRect()
       menuPosition.value = {
         top: `${rect.bottom + window.scrollY + 5}px`,
-        left: `${rect.left + window.scrollX - 150}px`
+        left: `${rect.left + window.scrollX - 150}px`,
       }
       showMenu.value = true
     }
@@ -377,17 +399,17 @@ const currentUserAvatar = computed(() => {
 
       try {
         const token = localStorage.getItem('token')
-        const res = await fetch('http://localhost:5000/api/reports', {
+        const res = await fetch(`${API_BASE_URL}/api/reports`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             postId: currentPostId.value,
             reason: selectedReason.value,
-            details: reportDetails.value
-          })
+            details: reportDetails.value,
+          }),
         })
 
         if (!res.ok) throw new Error('Gagal mengirim laporan')
@@ -400,10 +422,10 @@ const currentUserAvatar = computed(() => {
     }
 
     // Ambil nama user dari localStorage
-    let currentUserName = 'User';
+    let currentUserName = 'User'
     try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      currentUserName = user?.fullName || user?.username || 'User';
+      const user = JSON.parse(localStorage.getItem('user'))
+      currentUserName = user?.fullName || user?.username || 'User'
     } catch (e) {}
 
     return {
@@ -432,7 +454,7 @@ const currentUserAvatar = computed(() => {
       submitReport,
       currentUserName,
       currentUserAvatar,
-      getAvatarUrl
+      getAvatarUrl,
     }
   },
 }
@@ -701,7 +723,8 @@ const currentUserAvatar = computed(() => {
   margin: 0;
 }
 
-.cancel-btn, .post-btn {
+.cancel-btn,
+.post-btn {
   background: none;
   border: none;
   color: #8f8f9d;
