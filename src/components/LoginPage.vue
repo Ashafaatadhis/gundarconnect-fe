@@ -236,8 +236,10 @@ export default {
 
         if (response.ok) {
           // Simpan ke localStorage
+
           localStorage.setItem('token', data.token)
           localStorage.setItem('user', JSON.stringify(data.user))
+          localStorage.setItem('userId', data.user.id)
 
           // Simpan ke Pinia Store
           userStore.setUser(data.user)

@@ -346,6 +346,7 @@
 
 <script>
 import io from 'socket.io-client'
+
 import { getAvatarUrl } from '@/utils/avatar'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 export default {
@@ -571,13 +572,19 @@ export default {
     },
     setupSocketIO() {
       const token = localStorage.getItem('token')
-      const userId = localStorage.getItem('userId')
-
+      const userId = localStorage.getItem('userId') || token?.id
+      console.log(token, userId, 'TAI')
       this.socket = io(`${API_BASE_URL}`, {
         auth: { token },
+        transports: ['websocket'], // WAJIB TAMBAH INI!
+        withCredentials: true,
       })
+      // this.socket = io(`${API_BASE_URL}`, {
+      //   auth: { token },
+      // })
 
       this.socket.on('connect', () => {
+        console.log('Socket connected:', this.socket.id, 'TAII ', userId)
         this.socket.emit('identify', userId)
       })
 
