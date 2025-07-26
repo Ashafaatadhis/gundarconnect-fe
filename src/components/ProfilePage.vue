@@ -352,7 +352,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch, computed, nextTick, watchEffect } from 'vue'
+import { ref, reactive, onMounted, watch, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import TopBar from './TopBar.vue'
 import sidebar from './sidebar.vue'
@@ -368,25 +368,6 @@ const props = defineProps({
   user: Object,
 })
 
-// Inisialisasi awal
-const loadAvatar = () => {
-  if (props.user?.avatar) {
-    avatarUrl.value = getAvatarUrl(props.user.avatar)
-  } else {
-    avatarUrl.value = '/profile.png'
-  }
-}
-
-const defaultAvatar = '/profile.png'
-const avatarUrl = ref(defaultAvatar)
-
-function handleAvatarError() {
-  avatarUrl.value = defaultAvatar
-}
-
-// Reaktif saat `user` berubah
-watch(() => props.user, loadAvatar, { immediate: true })
-
 const route = useRoute()
 const router = useRouter()
 const user = ref(null)
@@ -401,14 +382,6 @@ const editForm = ref({
   name: '',
   username: '',
   bio: '',
-})
-
-watchEffect(() => {
-  if (user.value?.avatar) {
-    avatarUrl.value = getAvatarUrl(user.value.avatar)
-  } else {
-    avatarUrl.value = defaultAvatar
-  }
 })
 
 // Follow/Unfollow state menggunakan reactive object untuk memastikan reactivity
@@ -434,6 +407,24 @@ const tabs = [
     icon: 'div',
   },
 ]
+
+const avatarUrl = ref('/profile.png')
+
+const loadAvatar = () => {
+  if (user.value?.avatar) {
+    avatarUrl.value = getAvatarUrl(user.value.avatar)
+  } else {
+    avatarUrl.value = '/profile.png'
+  }
+}
+
+// Handle fallback jika error
+const handleAvatarError = () => {
+  avatarUrl.value = '/profile.png'
+}
+
+// Reaktif saat `user` berubah
+watch(user, loadAvatar, { immediate: true })
 
 // Get current user from token
 const getCurrentUser = () => {
