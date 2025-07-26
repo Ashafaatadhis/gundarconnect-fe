@@ -115,10 +115,22 @@
               @input="adjustTextareaHeight"
               ref="postTextarea"
             ></textarea>
+            <div v-if="previewImage" class="image-preview">
+              <img :src="previewImage" alt="Preview" style="max-width: 100%; border-radius: 8px" />
+            </div>
 
             <div class="post-actions">
+              <input
+                type="file"
+                accept="image/*"
+                @change="handleImageChange"
+                style="display: none"
+                ref="fileInput"
+              />
+
               <div class="action-buttons">
-                <button class="action-btn" title="Add Image">
+                <button class="action-btn" title="Add Image" @click="triggerImagePicker">
+                  <!-- ikon gambar -->
                   <svg
                     width="20"
                     height="20"
@@ -132,6 +144,7 @@
                     <polyline points="21,15 16,10 5,21" />
                   </svg>
                 </button>
+
                 <button class="action-btn" title="Add Poll">
                   <svg
                     width="20"
@@ -176,6 +189,24 @@ import { ref, onMounted, nextTick, computed } from 'vue'
 import FeedItem from './FeedItem.vue'
 import { getAvatarUrl } from '@/utils/avatar'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+const selectedFile = ref(null)
+const previewImage = ref(null)
+const fileInput = ref(null)
+
+const triggerImagePicker = () => {
+  fileInput.value?.click()
+}
+
+const handleImageChange = (e) => {
+  const file = e.target.files[0]
+  if (file && file.type.startsWith('image/')) {
+    selectedFile.value = file
+    previewImage.value = URL.createObjectURL(file)
+  } else {
+    selectedFile.value = null
+    previewImage.value = null
+  }
+}
 
 export default {
   name: 'FeedList',
@@ -307,29 +338,34 @@ export default {
     const closeModal = () => {
       showModal.value = false
       newPost.value = ''
+      selectedFile.value = null
+      previewImage.value = null
     }
 
     const submitPost = async () => {
-      if (newPost.value.trim()) {
-        try {
-          const token = localStorage.getItem('token')
-          const res = await fetch(`${API_BASE_URL}/api/posts`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              content: newPost.value,
-              image: '',
-            }),
-          })
-          if (!res.ok) throw new Error('Gagal membuat postingan')
-          await fetchPosts()
-          closeModal()
-        } catch (err) {
-          alert(err.message || 'Gagal membuat postingan')
+      if (!newPost.value.trim() && !selectedFile.value) return
+
+      try {
+        const token = localStorage.getItem('token')
+        const formData = new FormData()
+        formData.append('content', newPost.value)
+        if (selectedFile.value) {
+          formData.append('image', selectedFile.value)
         }
+
+        const res = await fetch(`${API_BASE_URL}/api/posts`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        })
+
+        if (!res.ok) throw new Error('Gagal membuat postingan')
+        await fetchPosts()
+        closeModal()
+      } catch (err) {
+        alert(err.message || 'Gagal membuat postingan')
       }
     }
 
@@ -429,6 +465,11 @@ export default {
     } catch (e) {}
 
     return {
+      triggerImagePicker,
+      handleImageChange,
+      fileInput,
+      selectedFile,
+      previewImage,
       posts,
       showModal,
       newPost,

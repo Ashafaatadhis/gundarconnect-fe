@@ -5,14 +5,7 @@
     </div>
     <div class="top-bar-right">
       <a href="#" class="profile-link" @click.prevent="handleProfileClick">
-        <img
-          v-if="avatarExists"
-          :src="userAvatar"
-          alt="User"
-          class="avatar"
-          @error="handleAvatarError"
-        />
-        <img v-else src="/profile.png" alt="Default Avatar" class="avatar" />
+        <img :src="userAvatar" alt="User" class="avatar" @error="handleAvatarError" />
       </a>
     </div>
   </div>
@@ -49,9 +42,9 @@ const fetchUserData = async () => {
   }
 }
 
-const avatarExists = computed(() => {
-  return userData.value?.avatar && !showPlaceholder.value
-})
+// const avatarExists = computed(() => {
+//   return userData.value?.avatar && !showPlaceholder.value
+// })
 
 const userAvatar = computed(() => {
   const user = userData.value

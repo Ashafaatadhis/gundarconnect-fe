@@ -13,20 +13,12 @@
           <div class="profile-info-section">
             <div class="profile-avatar-container">
               <div class="profile-avatar">
-                <template v-if="user && user.avatar">
-                  <img
-                    :src="getAvatarUrl(user.avatar)"
-                    alt="Avatar"
-                    style="width: 150px; height: 150px; border-radius: 50%"
-                  />
-                </template>
-                <template v-else>
-                  <img
-                    src="/profile.png"
-                    alt="Default Avatar"
-                    style="width: 150px; height: 150px; border-radius: 50%"
-                  />
-                </template>
+                <img
+                  :src="avatarUrl"
+                  @error="handleAvatarError"
+                  :alt="user?.fullName || 'Avatar'"
+                  style="width: 150px; height: 150px; border-radius: 50%"
+                />
               </div>
             </div>
 
@@ -364,9 +356,34 @@ import TopBar from './TopBar.vue'
 import sidebar from './sidebar.vue'
 import PostCard from './profile/PostCard.vue'
 import AboutInfo from './profile/AboutInfo.vue'
-import { getAvatarUrl } from '@/utils/avatar'
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 import UserAvatar from '@/components/UserAvatar.vue'
+
+import { getAvatarUrl } from '@/utils/avatar' // jika kamu punya helper ini
+
+const props = defineProps({
+  user: Object,
+})
+
+const avatarUrl = ref('')
+
+// Inisialisasi awal
+const loadAvatar = () => {
+  if (props.user?.avatar) {
+    avatarUrl.value = getAvatarUrl(props.user.avatar)
+  } else {
+    avatarUrl.value = '/profile.png'
+  }
+}
+
+// Handle fallback jika error
+const handleAvatarError = () => {
+  avatarUrl.value = '/profile.png'
+}
+
+// Reaktif saat `user` berubah
+watch(() => props.user, loadAvatar, { immediate: true })
 
 const route = useRoute()
 const router = useRouter()

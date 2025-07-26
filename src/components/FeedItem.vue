@@ -5,7 +5,7 @@
   >
     <div class="feed-header">
       <div class="user-info">
-        <img :src="getAvatarUrl(post.author?.avatar)" alt="User Avatar" class="avatar" />
+        <img :src="avatarSrc" alt="User Avatar" class="avatar" @error="onAvatarError" />
         <div>
           <router-link
             class="username"
@@ -17,6 +17,7 @@
           <div class="timestamp">{{ formatTimestamp(post.createdAt) }}</div>
         </div>
       </div>
+
       <div class="more-options">
         <span v-if="post.isReply">Balas</span>
         <div v-else class="menu-container">
@@ -88,7 +89,7 @@
       <p>{{ post.content }}</p>
 
       <!-- Gambar jika ada -->
-      <img v-if="post.image" :src="post.image" alt="Post Image" class="post-image" />
+      <img v-if="post.image" :src="getImageUrl(post.image)" alt="Post Image" class="post-image" />
     </div>
 
     <div class="feed-actions">
@@ -211,7 +212,7 @@
             <!-- Komentar item -->
             <div v-for="(comment, index) in post.comments" :key="index" class="comment-item">
               <div class="comment-avatar">
-                <img :src="getAvatarUrl(comment.author?.avatar)" alt="User Avatar" />
+                <img :src="avatarSrc" alt="User Avatar" class="avatar" @error="onAvatarError" />
               </div>
               <div class="comment-content">
                 <div class="comment-header">
@@ -381,8 +382,25 @@
   </div>
 </template>
 
+<script setup>
+const props = defineProps({ post: Object })
+
+const defaultAvatar = '/profile.png'
+const avatarSrc = ref(defaultAvatar)
+
+watchEffect(() => {
+  const avatar = props.post?.author?.avatar
+  avatarSrc.value = avatar ? getAvatarUrl(avatar) : defaultAvatar
+})
+
+const onAvatarError = () => {
+  avatarSrc.value = defaultAvatar
+}
+</script>
+
 <script>
 import { getAvatarUrl } from '@/utils/avatar'
+import { ref, watchEffect } from 'vue'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 export default {
@@ -466,6 +484,11 @@ export default {
   },
   methods: {
     // Existing methods
+    getImageUrl(imagePath) {
+      if (!imagePath) return ''
+      if (imagePath.startsWith('http')) return imagePath
+      return API_BASE_URL + imagePath
+    },
     setCurrentUser() {
       try {
         const user = JSON.parse(localStorage.getItem('user'))
@@ -781,6 +804,14 @@ export default {
   z-index: 1000;
 }
 
+.post-image {
+  margin-top: 12px;
+  max-width: 100%;
+  max-height: 350px; /* batas tinggi gambar */
+  object-fit: cover; /* crop gambar agar proporsional */
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
 /* Report Modal Styles */
 .report-modal {
   background-color: #1a1a2e;
