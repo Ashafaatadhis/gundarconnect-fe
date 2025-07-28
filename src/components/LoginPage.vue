@@ -55,7 +55,7 @@
                 id="username"
                 v-model="form.username"
                 :class="{ error: errors.username, valid: form.username && !errors.username }"
-                placeholder="NPM atau email@student.gunadarma.ac.id"
+                placeholder="Username studentsite"
                 @input="clearError('username')"
                 @focus="focusedField = 'username'"
                 @blur="focusedField = ''"
