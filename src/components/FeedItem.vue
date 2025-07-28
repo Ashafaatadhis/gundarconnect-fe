@@ -89,7 +89,13 @@
       <p>{{ post.content }}</p>
 
       <!-- Gambar jika ada -->
-      <img v-if="post.image" :src="getImageUrl(post.image)" alt="Post Image" class="post-image" />
+      <img
+        v-if="post.image"
+        :src="getImageUrl(post.image)"
+        alt="Post Image"
+        @error="(e) => (e.target.src = 'https://placehold.co/600x400?text=No+Image')"
+        class="post-image"
+      />
     </div>
 
     <div class="feed-actions">
@@ -216,7 +222,7 @@
                   :src="getAvatarUrl(comment.author?.avatar)"
                   alt="User Avatar"
                   class="avatar"
-                  @error="onAvatarError"
+                  @error="(e) => (e.target.src = '/profile.png')"
                 />
               </div>
               <div class="comment-content">

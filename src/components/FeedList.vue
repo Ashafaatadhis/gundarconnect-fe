@@ -118,7 +118,12 @@
               ref="postTextarea"
             ></textarea>
             <div v-if="previewImage" class="image-preview">
-              <img :src="previewImage" alt="Preview" style="max-width: 100%; border-radius: 8px" />
+              <img
+                :src="previewImage"
+                alt="Preview"
+                style="max-width: 100%; border-radius: 8px"
+                @error="(e) => (e.target.src = 'https://placehold.co/600x400?text=No+Image')"
+              />
             </div>
 
             <div class="post-actions">

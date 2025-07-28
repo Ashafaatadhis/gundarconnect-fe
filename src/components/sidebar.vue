@@ -192,7 +192,7 @@
                   v-if="notification.avatar && notification.avatar !== '/api/placeholder/40/40'"
                   :src="getAvatarUrl(notification.avatar)"
                   :alt="notification.username"
-                  @error="handleAvatarError"
+                  @error="(e) => (e.target.src = '/profile.png')"
                 />
                 <img v-else src="/profile.png" class="avatar-placeholder" />
                 <!-- {{ (notification.username || 'U').charAt(0).toUpperCase() }} -->
