@@ -348,6 +348,7 @@
 <script>
 import io from 'socket.io-client'
 import { getAvatarUrl } from '@/utils/avatar'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 const handleAvatarError = () => {
   avatarUrl.value = '/profile.png'
@@ -439,7 +440,7 @@ export default {
 
       try {
         const response = await fetch(
-          `http://localhost:5000/api/search?q=${encodeURIComponent(this.searchQuery)}`,
+          `${API_BASE_URL}/api/search?q=${encodeURIComponent(this.searchQuery)}`,
           {
             method: 'GET',
             credentials: 'include',
@@ -479,7 +480,7 @@ export default {
     async markAllAsRead() {
       const token = localStorage.getItem('token')
       try {
-        await fetch('http://localhost:5000/api/notifications/mark-all-read', {
+        await fetch(`${API_BASE_URL}/api/notifications/mark-all-read`, {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -547,7 +548,7 @@ export default {
     async loadNotifications() {
       const token = localStorage.getItem('token')
       try {
-        const response = await fetch('http://localhost:5000/api/notifications', {
+        const response = await fetch(`${API_BASE_URL}/api/notifications`, {
           headers: { Authorization: `Bearer ${token}` },
         })
         const notifData = await response.json()
@@ -579,7 +580,7 @@ export default {
       const token = localStorage.getItem('token')
       const userId = localStorage.getItem('userId')
 
-      this.socket = io('http://localhost:5000', {
+      this.socket = io(`${API_BASE_URL}`, {
         auth: { token },
       })
 
