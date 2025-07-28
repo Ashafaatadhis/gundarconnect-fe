@@ -323,7 +323,7 @@
               <input
                 type="text"
                 v-model="newComment"
-                :placeholder="`Komentari sebagai ${currentUserName}`"
+                :placeholder="`Komentar sebagai ${currentUserName}`"
                 class="comment-input"
                 @keyup.enter="submitComment"
               />
