@@ -6,9 +6,7 @@
         <span class="title-icon">📚</span>
         Postingan Tersimpan
       </h1>
-      <div class="subtitle">
-        {{ posts.length }} postingan telah disimpan
-      </div>
+      <div class="subtitle">{{ posts.length }} postingan telah disimpan</div>
     </div>
 
     <!-- Grid View -->
@@ -24,12 +22,17 @@
       >
         <!-- Image Section -->
         <div class="post-image-container">
-          <img :src="post.image" :alt="post.title" class="post-image" @error="handleImageError" />
+          <img
+            :src="post.image || 'https://placehold.co/600x400?text=No+Image'"
+            :alt="post.title"
+            class="post-image"
+            @error="handleImageError"
+          />
           <div class="image-overlay"></div>
 
           <!-- Saved Badge -->
           <div class="saved-badge">
-            <i class="fa fa-bookmark"></i> 
+            <i class="fa fa-bookmark"></i>
             <span>Tersimpan</span>
           </div>
 
@@ -45,10 +48,12 @@
           <!-- Author -->
           <div class="post-author">
             <img
-              :src="post.author.avatar || getDefaultAvatar(post.author.username)"
+              :src="post.author.avatar ? getAvatarUrl(post.author.avatar) : '/profile.png'"
               :alt="post.author.username"
               class="author-avatar"
+              @error="handleAuthorAvatarError"
             />
+
             <span class="author-name">@{{ post.author.username }}</span>
           </div>
 
@@ -66,7 +71,7 @@
             >
               #{{ tag }}
             </span>
-            <span v-if="(post.tags && post.tags.length > 3)" class="tag tag-more">
+            <span v-if="post.tags && post.tags.length > 3" class="tag tag-more">
               +{{ post.tags.length - 3 }}
             </span>
           </div>
@@ -91,7 +96,11 @@
               <button class="action-btn" @click.stop="sharePost(post.id)" title="Bagikan">
                 <i class="fa fa-share"></i>
               </button>
-              <button class="action-btn remove-btn" @click.stop="removeSavedPost(post.id)" title="Hapus">
+              <button
+                class="action-btn remove-btn"
+                @click.stop="removeSavedPost(post.id)"
+                title="Hapus"
+              >
                 <i class="fa fa-trash"></i>
               </button>
             </div>
@@ -142,6 +151,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useSavedStore } from '@/stores/saved'
 import { useRouter } from 'vue-router'
+import { getAvatarUrl } from '@/utils/avatar'
 
 const router = useRouter()
 const savedStore = useSavedStore()
@@ -172,6 +182,16 @@ const formatTime = (timestamp) => {
   })
 }
 
+const handleAuthorAvatarError = (event) => {
+  event.target.onerror = null
+  event.target.src = '/profile.png'
+}
+
+const handleImageError = (e) => {
+  e.target.onerror = null
+  e.target.src = 'https://placehold.co/600x400?text=No+Image' // atau '/no-image.png' sesuai kebutuhan kamu
+}
+
 const truncateContent = (content, max) => {
   if (!content) return ''
   return content.length <= max ? content : content.slice(0, max) + '...'
@@ -179,10 +199,6 @@ const truncateContent = (content, max) => {
 
 const getDefaultAvatar = (username) => {
   return `https://ui-avatars.com/api/?name=${username}&background=4a5568&color=fff`
-}
-
-const handleImageError = (e) => {
-  e.target.src = 'https://via.placeholder.com/400x300/1a1a2e/4a5568?text=No+Image'
 }
 
 const viewFullPost = (id) => {
@@ -200,7 +216,7 @@ const sharePost = (id) => {
 
 const removeSavedPost = (id) => {
   if (confirm('Hapus postingan dari tersimpan?')) {
-    const index = posts.value.findIndex(post => post.id === id)
+    const index = posts.value.findIndex((post) => post.id === id)
     if (index > -1) {
       posts.value.splice(index, 1)
     }
@@ -222,7 +238,7 @@ const sortByNewest = () => {
 }
 
 const sortByPopular = () => {
-  posts.value.sort((a, b) => (b.likes + b.comments) - (a.likes + a.comments))
+  posts.value.sort((a, b) => b.likes + b.comments - (a.likes + a.comments))
   showQuickActions.value = false
 }
 
@@ -691,7 +707,11 @@ const clearAll = () => {
 }
 
 @keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
     transform: translateY(0);
   }
   40% {
@@ -703,7 +723,8 @@ const clearAll = () => {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -712,7 +733,8 @@ const clearAll = () => {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -721,7 +743,8 @@ const clearAll = () => {
 }
 
 @keyframes floatBookmark {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
     opacity: 0.3;
   }

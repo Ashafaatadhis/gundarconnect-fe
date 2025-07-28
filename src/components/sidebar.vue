@@ -187,15 +187,16 @@
             >
               <div class="notification-avatar">
                 <!-- Fixed: Gunakan getAvatarUrl helper dan fallback yang proper -->
+                <!-- <pre>{{ notification.avatar }}</pre> -->
                 <img
                   v-if="notification.avatar && notification.avatar !== '/api/placeholder/40/40'"
                   :src="getAvatarUrl(notification.avatar)"
                   :alt="notification.username"
                   @error="handleAvatarError"
                 />
-                <div v-else class="avatar-placeholder">
-                  {{ (notification.username || 'U').charAt(0).toUpperCase() }}
-                </div>
+                <img v-else src="/profile.png" class="avatar-placeholder" />
+                <!-- {{ (notification.username || 'U').charAt(0).toUpperCase() }} -->
+                <!-- </img> -->
                 <!-- Notification type icon overlay -->
                 <div class="notification-type-icon" :class="notification.type">
                   <svg
@@ -346,9 +347,12 @@
 
 <script>
 import io from 'socket.io-client'
-
 import { getAvatarUrl } from '@/utils/avatar'
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
+const handleAvatarError = () => {
+  avatarUrl.value = '/profile.png'
+}
+
 export default {
   name: 'Sidebar',
   data() {
@@ -426,6 +430,7 @@ export default {
       this.searchQuery = ''
       this.searchResults = []
     },
+
     async handleSearchInput() {
       if (this.searchQuery.trim() === '') {
         this.searchResults = []
@@ -434,7 +439,7 @@ export default {
 
       try {
         const response = await fetch(
-          `${API_BASE_URL}/api/search?q=${encodeURIComponent(this.searchQuery)}`,
+          `http://localhost:5000/api/search?q=${encodeURIComponent(this.searchQuery)}`,
           {
             method: 'GET',
             credentials: 'include',
@@ -474,7 +479,7 @@ export default {
     async markAllAsRead() {
       const token = localStorage.getItem('token')
       try {
-        await fetch(`${API_BASE_URL}/api/notifications/mark-all-read`, {
+        await fetch('http://localhost:5000/api/notifications/mark-all-read', {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
         })
@@ -542,7 +547,7 @@ export default {
     async loadNotifications() {
       const token = localStorage.getItem('token')
       try {
-        const response = await fetch(`${API_BASE_URL}/api/notifications`, {
+        const response = await fetch('http://localhost:5000/api/notifications', {
           headers: { Authorization: `Bearer ${token}` },
         })
         const notifData = await response.json()
@@ -572,19 +577,13 @@ export default {
     },
     setupSocketIO() {
       const token = localStorage.getItem('token')
-      const userId = localStorage.getItem('userId') || token?.id
-      console.log(token, userId, 'TAI')
-      this.socket = io(`${API_BASE_URL}`, {
+      const userId = localStorage.getItem('userId')
+
+      this.socket = io('http://localhost:5000', {
         auth: { token },
-        transports: ['websocket'], // WAJIB TAMBAH INI!
-        withCredentials: true,
       })
-      // this.socket = io(`${API_BASE_URL}`, {
-      //   auth: { token },
-      // })
 
       this.socket.on('connect', () => {
-        console.log('Socket connected:', this.socket.id, 'TAII ', userId)
         this.socket.emit('identify', userId)
       })
 

@@ -59,6 +59,7 @@
             d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
           />
         </svg>
+
         <span>{{ likeCount }}</span>
       </button>
 
@@ -85,12 +86,22 @@
     <div v-if="showComments" class="comments-section">
       <div class="comment-input">
         <div class="comment-avatar-small">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-            <path
-              d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-            />
-          </svg>
+          <img
+            v-if="currentUser.avatar"
+            :src="getAvatarUrl(currentUser.avatar)"
+            alt="avatar"
+            class="avatar-img"
+            @error="handleAvatarError"
+          />
+          <img
+            v-else
+            src="/profile.png"
+            alt="avatar"
+            class="avatar-img"
+            @error="handleAvatarError"
+          />
         </div>
+
         <input
           v-model="newComment"
           placeholder="Write a comment..."
@@ -107,12 +118,22 @@
       <div class="comments-list">
         <div v-for="comment in comments" :key="comment.id" class="comment-item">
           <div class="comment-avatar-small">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-              />
-            </svg>
+            <img
+              v-if="comment.avatar"
+              :src="getAvatarUrl(comment.avatar)"
+              alt="avatar"
+              class="avatar-img"
+              @error="handleAvatarError"
+            />
+            <img
+              v-else
+              src="/profile.png"
+              alt="avatar"
+              class="avatar-img"
+              @error="handleAvatarError"
+            />
           </div>
+
           <div class="comment-content">
             <div class="comment-header">
               <span class="comment-author">{{ comment.author }}</span>
@@ -132,6 +153,8 @@ import { ref, computed, onMounted } from 'vue'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
+const currentUser = JSON.parse(localStorage.getItem('user')) || {}
+
 const props = defineProps({
   post: {
     type: Object,
@@ -143,6 +166,7 @@ const emit = defineEmits(['deleted'])
 const showMenu = ref(false)
 const showComments = ref(false)
 const isLiked = ref(false)
+
 const likeCount = ref(props.post.likes ? props.post.likes.length : 0)
 const newComment = ref('')
 
@@ -151,6 +175,7 @@ const comments = computed(() => {
     return props.post.comments.map((c) => ({
       id: c.id || c._id || Math.random(),
       author: c.author?.fullName || c.author?.username || '-',
+      avatar: c.author?.avatar || null,
       text: c.content || c.text || c.comment || '-',
       time: c.createdAt
         ? new Date(c.createdAt).toLocaleString('id-ID', {
@@ -427,6 +452,34 @@ const deletePost = async () => {
 .send-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.comment-avatar-small {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #d1d5db; /* abu-abu netral */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #374151;
+  font-size: 0.8rem;
+  border-radius: 50%;
 }
 
 .comments-list {

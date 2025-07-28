@@ -158,26 +158,27 @@
               <label class="form-label">Profile Picture </label>
               <div class="avatar-upload">
                 <div class="avatar-preview">
-                  <!-- {{ avatarPreview }} -->
-
                   <img
-                    v-if="avatarPreview"
-                    :src="avatarPreview"
-                    alt="Preview"
-                    style="width: 40px; height: 40px; border-radius: 50%"
-                  />
-                  <img
-                    v-else-if="user && user.avatar"
-                    :src="getAvatarUrl(user.avatar)"
+                    v-show="!avatarError"
+                    :src="finalAvatar"
+                    @error="handleImageError"
                     alt="Avatar"
                     style="width: 40px; height: 40px; border-radius: 50%"
                   />
-                  <svg v-else width="40" height="40" fill="currentColor" viewBox="0 0 24 24">
+
+                  <svg
+                    v-show="avatarError"
+                    width="40"
+                    height="40"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
                     ></path>
                   </svg>
                 </div>
+
                 <button type="button" class="upload-btn" @click="$refs.fileInput.click()">
                   Change Photo
                 </button>
@@ -394,6 +395,27 @@ const followStats = reactive({
   followers: 0,
   following: 0,
 })
+
+const finalAvatar = computed(() => {
+  if (avatarPreview.value && avatarPreview.value.trim() !== '') {
+    return avatarPreview.value
+  } else if (user.value && user.value.avatar && user.value.avatar.trim() !== '') {
+    return getAvatarUrl(user.value.avatar)
+  } else {
+    return '/profile.png'
+  }
+})
+
+const handleImageError = (event) => {
+  console.log('Error loading image, setting to fallback /profile.png')
+
+  event.target.onerror = null
+  event.target.src = '/profile.png'
+
+  if (avatarPreview.value && avatarPreview.value !== '/profile.png') {
+    avatarPreview.value = null // trigger re-computation of finalAvatar
+  }
+}
 
 const tabs = [
   {
@@ -640,6 +662,7 @@ const fetchProfile = async () => {
     }
 
     const data = await response.json()
+
     console.log('Profile data:', data)
 
     if (!data.user) {

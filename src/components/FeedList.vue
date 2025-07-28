@@ -96,10 +96,12 @@
         <div class="modal-body">
           <div class="user-info">
             <div class="user-avatar">
-              <img v-if="currentUserAvatar" :src="currentUserAvatar" alt="User Avatar" />
-              <div v-else class="avatar-placeholder">
-                {{ (currentUserName || 'U').charAt(0).toUpperCase() }}
-              </div>
+              <img
+                :src="finalUserAvatar"
+                alt="User Avatar"
+                @error="handleAvatarError"
+                style="width: 40px; height: 40px; border-radius: 50%"
+              />
             </div>
             <div class="user-details">
               <span class="username">{{ currentUserName }}</span>
@@ -183,19 +185,74 @@
     </div>
   </div>
 </template>
-
-<script>
-import { ref, onMounted, nextTick, computed } from 'vue'
+<script setup>
+import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import FeedItem from './FeedItem.vue'
 import { getAvatarUrl } from '@/utils/avatar'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+
+const posts = ref([])
+const showModal = ref(false)
+const newPost = ref('')
+const postTextarea = ref(null)
 const selectedFile = ref(null)
 const previewImage = ref(null)
 const fileInput = ref(null)
 
-const triggerImagePicker = () => {
-  fileInput.value?.click()
-}
+const showMenu = ref(false)
+const currentPostId = ref(null)
+const menuPosition = ref({ top: '0px', left: '0px' })
+
+const showReportModal = ref(false)
+const selectedReason = ref(null)
+const reportDetails = ref('')
+
+const reportReasons = ref([
+  {
+    id: 'spam',
+    title: 'Spam',
+    description: 'Postingan yang tidak relevan atau mengganggu',
+    icon: 'fa fa-ban',
+  },
+  {
+    id: 'harassment',
+    title: 'Pelecehan atau Bullying',
+    description: 'Konten yang menyerang atau melecehkan seseorang',
+    icon: 'fa fa-exclamation-triangle',
+  },
+  {
+    id: 'hate-speech',
+    title: 'Ujaran Kebencian',
+    description: 'Konten yang mengandung diskriminasi atau kebencian',
+    icon: 'fa fa-angry',
+  },
+  {
+    id: 'violence',
+    title: 'Kekerasan',
+    description: 'Konten yang mengandung kekerasan atau ancaman',
+    icon: 'fa fa-fist-raised',
+  },
+  {
+    id: 'inappropriate',
+    title: 'Konten Tidak Pantas',
+    description: 'Konten dewasa atau tidak sesuai komunitas',
+    icon: 'fa fa-eye-slash',
+  },
+  {
+    id: 'misinformation',
+    title: 'Informasi Palsu',
+    description: 'Menyebarkan berita atau informasi yang salah',
+    icon: 'fa fa-times-circle',
+  },
+  {
+    id: 'other',
+    title: 'Lainnya',
+    description: 'Alasan lain yang tidak tercantum di atas',
+    icon: 'fa fa-ellipsis-h',
+  },
+])
+
+const triggerImagePicker = () => fileInput.value?.click()
 
 const handleImageChange = (e) => {
   const file = e.target.files[0]
@@ -208,296 +265,173 @@ const handleImageChange = (e) => {
   }
 }
 
-export default {
-  name: 'FeedList',
-  components: {
-    FeedItem,
-  },
-  setup() {
-    const posts = ref([])
-    const showModal = ref(false)
-    const newPost = ref('')
-    const postTextarea = ref(null)
+// Current user data
+const currentUser = ref(null)
 
-    // Menu states
-    const showMenu = ref(false)
-    const currentPostId = ref(null)
-    const menuPosition = ref({ top: '0px', left: '0px' })
+const getCurrentUser = () => {
+  try {
+    const user = localStorage.getItem('user')
+    if (user) return JSON.parse(user)
+    const token = localStorage.getItem('token')
+    if (!token) return null
+    return JSON.parse(atob(token.split('.')[1]))
+  } catch (e) {
+    console.error('Error getting user:', e)
+    return null
+  }
+}
 
-    // Report states
-    const showReportModal = ref(false)
-    const selectedReason = ref(null)
-    const reportDetails = ref('')
+const currentUserAvatar = computed(() => {
+  const user = currentUser.value || getCurrentUser()
+  if (!user?.avatar) return null
+  return getAvatarUrl(user.avatar)
+})
 
-    const reportReasons = ref([
-      {
-        id: 'spam',
-        title: 'Spam',
-        description: 'Postingan yang tidak relevan atau mengganggu',
-        icon: 'fa fa-ban',
-      },
-      {
-        id: 'harassment',
-        title: 'Pelecehan atau Bullying',
-        description: 'Konten yang menyerang atau melecehkan seseorang',
-        icon: 'fa fa-exclamation-triangle',
-      },
-      {
-        id: 'hate-speech',
-        title: 'Ujaran Kebencian',
-        description: 'Konten yang mengandung diskriminasi atau kebencian',
-        icon: 'fa fa-angry',
-      },
-      {
-        id: 'violence',
-        title: 'Kekerasan',
-        description: 'Konten yang mengandung kekerasan atau ancaman',
-        icon: 'fa fa-fist-raised',
-      },
-      {
-        id: 'inappropriate',
-        title: 'Konten Tidak Pantas',
-        description: 'Konten dewasa atau tidak sesuai komunitas',
-        icon: 'fa fa-eye-slash',
-      },
-      {
-        id: 'misinformation',
-        title: 'Informasi Palsu',
-        description: 'Menyebarkan berita atau informasi yang salah',
-        icon: 'fa fa-times-circle',
-      },
-      {
-        id: 'other',
-        title: 'Lainnya',
-        description: 'Alasan lain yang tidak tercantum di atas',
-        icon: 'fa fa-ellipsis-h',
-      },
-    ])
+const finalUserAvatar = ref(currentUserAvatar.value || '/profile.png')
+watch(currentUserAvatar, (val) => {
+  finalUserAvatar.value = val || '/profile.png'
+})
 
-    // Current user data - TAMBAH INI SAJA
-    const currentUser = ref(null)
+const handleAvatarError = (event) => {
+  event.target.onerror = null
+  event.target.src = '/profile.png'
+  finalUserAvatar.value = '/profile.png'
+}
 
-    // Get current user info - TAMBAH INI SAJA
-    const getCurrentUser = () => {
-      try {
-        const user = localStorage.getItem('user')
-        if (user) {
-          return JSON.parse(user)
-        }
+let currentUserName = 'User'
+try {
+  const user = JSON.parse(localStorage.getItem('user'))
+  currentUserName = user?.fullName || user?.username || 'User'
+} catch (e) {}
 
-        const token = localStorage.getItem('token')
-        if (!token) return null
+const fetchPosts = async () => {
+  try {
+    const token = localStorage.getItem('token')
+    const headers = token ? { Authorization: `Bearer ${token}` } : {}
+    const res = await fetch(`${API_BASE_URL}/api/posts`, { headers })
+    if (!res.ok) throw new Error('Gagal memuat feed')
+    const data = await res.json()
+    posts.value = Array.isArray(data) ? data : []
+  } catch (err) {
+    posts.value = []
+    console.error('Feed fetch error:', err)
+  }
+}
 
-        return JSON.parse(atob(token.split('.')[1]))
-      } catch (e) {
-        console.error('Error getting user:', e)
-        return null
-      }
-    }
+onMounted(() => {
+  fetchPosts()
+  currentUser.value = getCurrentUser()
+})
 
-    // Computed for avatar - TAMBAH INI SAJA
-    const currentUserAvatar = computed(() => {
-      const user = currentUser.value || getCurrentUser()
-      if (!user?.avatar) return null
-      return getAvatarUrl(user.avatar)
+const openNewThreadModal = () => {
+  showModal.value = true
+  nextTick(() => postTextarea.value?.focus())
+}
+
+const closeModal = () => {
+  showModal.value = false
+  newPost.value = ''
+  selectedFile.value = null
+  previewImage.value = null
+}
+
+const submitPost = async () => {
+  if (!newPost.value.trim() && !selectedFile.value) return
+  try {
+    const token = localStorage.getItem('token')
+    const formData = new FormData()
+    formData.append('content', newPost.value)
+    if (selectedFile.value) formData.append('image', selectedFile.value)
+    const res = await fetch(`${API_BASE_URL}/api/posts`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
     })
+    if (!res.ok) throw new Error('Gagal membuat postingan')
+    await fetchPosts()
+    closeModal()
+  } catch (err) {
+    alert(err.message || 'Gagal membuat postingan')
+  }
+}
 
-    // Existing functions
-    const fetchPosts = async () => {
-      try {
-        const token = localStorage.getItem('token')
-        const headers = token ? { Authorization: `Bearer ${token}` } : {}
-        const res = await fetch(`${API_BASE_URL}/api/posts`, {
-          headers,
-        })
-        if (!res.ok) throw new Error('Gagal memuat feed')
-        const data = await res.json()
-        console.log('FEED DATA:', data)
-        posts.value = Array.isArray(data) ? data : []
-      } catch (err) {
-        posts.value = []
-        console.error('Feed fetch error:', err)
-      }
-    }
+const adjustTextareaHeight = () => {
+  if (postTextarea.value) {
+    postTextarea.value.style.height = 'auto'
+    postTextarea.value.style.height = postTextarea.value.scrollHeight + 'px'
+  }
+}
 
-    onMounted(() => {
-      fetchPosts()
-      // Get current user data
-      currentUser.value = getCurrentUser()
+const showPostMenu = ({ postId, event }) => {
+  currentPostId.value = postId
+  const rect = event.target.getBoundingClientRect()
+  menuPosition.value = {
+    top: `${rect.bottom + window.scrollY + 5}px`,
+    left: `${rect.left + window.scrollX - 150}px`,
+  }
+  showMenu.value = true
+}
+
+const closeMenu = () => {
+  showMenu.value = false
+  currentPostId.value = null
+}
+
+const reportPost = () => {
+  showReportModal.value = true
+  closeMenu()
+}
+
+const savePost = () => {
+  alert('Postingan disimpan!')
+  closeMenu()
+}
+
+const copyLink = () => {
+  navigator.clipboard.writeText(`${window.location.origin}/post/${currentPostId.value}`)
+  alert('Link disalin!')
+  closeMenu()
+}
+
+const blockUser = () => {
+  if (confirm('Apakah Anda yakin ingin memblokir pengguna ini?')) {
+    alert('Pengguna diblokir!')
+    closeMenu()
+  }
+}
+
+const closeReportModal = () => {
+  showReportModal.value = false
+  selectedReason.value = null
+  reportDetails.value = ''
+}
+
+const selectReason = (reasonId) => {
+  selectedReason.value = reasonId
+}
+
+const submitReport = async () => {
+  if (!selectedReason.value) return
+  try {
+    const token = localStorage.getItem('token')
+    const res = await fetch(`${API_BASE_URL}/api/reports`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        postId: currentPostId.value,
+        reason: selectedReason.value,
+        details: reportDetails.value,
+      }),
     })
-
-    const openNewThreadModal = () => {
-      showModal.value = true
-      nextTick(() => {
-        if (postTextarea.value) {
-          postTextarea.value.focus()
-        }
-      })
-    }
-
-    const closeModal = () => {
-      showModal.value = false
-      newPost.value = ''
-      selectedFile.value = null
-      previewImage.value = null
-    }
-
-    const submitPost = async () => {
-      if (!newPost.value.trim() && !selectedFile.value) return
-
-      try {
-        const token = localStorage.getItem('token')
-        const formData = new FormData()
-        formData.append('content', newPost.value)
-        if (selectedFile.value) {
-          formData.append('image', selectedFile.value)
-        }
-
-        const res = await fetch(`${API_BASE_URL}/api/posts`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        })
-
-        if (!res.ok) throw new Error('Gagal membuat postingan')
-        await fetchPosts()
-        closeModal()
-      } catch (err) {
-        alert(err.message || 'Gagal membuat postingan')
-      }
-    }
-
-    const adjustTextareaHeight = () => {
-      if (postTextarea.value) {
-        postTextarea.value.style.height = 'auto'
-        postTextarea.value.style.height = postTextarea.value.scrollHeight + 'px'
-      }
-    }
-
-    // Menu functions
-    const showPostMenu = ({ postId, event }) => {
-      currentPostId.value = postId
-      const rect = event.target.getBoundingClientRect()
-      menuPosition.value = {
-        top: `${rect.bottom + window.scrollY + 5}px`,
-        left: `${rect.left + window.scrollX - 150}px`,
-      }
-      showMenu.value = true
-    }
-
-    const closeMenu = () => {
-      showMenu.value = false
-      currentPostId.value = null
-    }
-
-    // Menu actions
-    const reportPost = () => {
-      showReportModal.value = true
-      closeMenu()
-    }
-
-    const savePost = () => {
-      // Implement save post functionality
-      alert('Postingan disimpan!')
-      closeMenu()
-    }
-
-    const copyLink = () => {
-      // Implement copy link functionality
-      navigator.clipboard.writeText(`${window.location.origin}/post/${currentPostId.value}`)
-      alert('Link disalin!')
-      closeMenu()
-    }
-
-    const blockUser = () => {
-      if (confirm('Apakah Anda yakin ingin memblokir pengguna ini?')) {
-        // Implement block user functionality
-        alert('Pengguna diblokir!')
-        closeMenu()
-      }
-    }
-
-    // Report functions
-    const closeReportModal = () => {
-      showReportModal.value = false
-      selectedReason.value = null
-      reportDetails.value = ''
-    }
-
-    const selectReason = (reasonId) => {
-      selectedReason.value = reasonId
-    }
-
-    const submitReport = async () => {
-      if (!selectedReason.value) return
-
-      try {
-        const token = localStorage.getItem('token')
-        const res = await fetch(`${API_BASE_URL}/api/reports`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            postId: currentPostId.value,
-            reason: selectedReason.value,
-            details: reportDetails.value,
-          }),
-        })
-
-        if (!res.ok) throw new Error('Gagal mengirim laporan')
-
-        alert('Laporan berhasil dikirim. Terima kasih!')
-        closeReportModal()
-      } catch (err) {
-        alert(err.message || 'Gagal mengirim laporan')
-      }
-    }
-
-    // Ambil nama user dari localStorage
-    let currentUserName = 'User'
-    try {
-      const user = JSON.parse(localStorage.getItem('user'))
-      currentUserName = user?.fullName || user?.username || 'User'
-    } catch (e) {}
-
-    return {
-      triggerImagePicker,
-      handleImageChange,
-      fileInput,
-      selectedFile,
-      previewImage,
-      posts,
-      showModal,
-      newPost,
-      postTextarea,
-      showMenu,
-      menuPosition,
-      showReportModal,
-      selectedReason,
-      reportDetails,
-      reportReasons,
-      openNewThreadModal,
-      closeModal,
-      submitPost,
-      adjustTextareaHeight,
-      showPostMenu,
-      closeMenu,
-      reportPost,
-      savePost,
-      copyLink,
-      blockUser,
-      closeReportModal,
-      selectReason,
-      submitReport,
-      currentUserName,
-      currentUserAvatar,
-      getAvatarUrl,
-    }
-  },
+    if (!res.ok) throw new Error('Gagal mengirim laporan')
+    alert('Laporan berhasil dikirim. Terima kasih!')
+    closeReportModal()
+  } catch (err) {
+    alert(err.message || 'Gagal mengirim laporan')
+  }
 }
 </script>
 
