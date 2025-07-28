@@ -23,7 +23,7 @@
         <!-- Image Section -->
         <div class="post-image-container">
           <img
-            :src="post.image || 'https://placehold.co/600x400?text=No+Image'"
+            :src="getAvatarUrl(post.image) || 'https://placehold.co/600x400?text=No+Image'"
             :alt="post.title"
             class="post-image"
             @error="handleImageError"

@@ -2,22 +2,12 @@
   <div class="post-card">
     <div class="post-header">
       <div class="post-avatar">
-        <template v-if="post.author && post.author.avatar">
-          <img
-            :src="getAvatarUrl(post.author.avatar)"
-            alt="Avatar"
-            style="width: 32px; height: 32px; border-radius: 50%"
-          />
-        </template>
-        <template v-else>
-          <div class="avatar-placeholder">
-            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-              <path
-                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-              />
-            </svg>
-          </div>
-        </template>
+        <img
+          :src="getAvatarUrl(post.author?.avatar)"
+          :alt="post.author?.username || 'Avatar'"
+          style="width: 32px; height: 32px; border-radius: 50%"
+          @error="(e) => (e.target.src = '/profile.png')"
+        />
       </div>
       <div class="post-info">
         <span class="post-author">{{ post.author?.fullName || post.author?.username || '-' }}</span>
@@ -41,13 +31,12 @@
       <p class="post-text">{{ post.content }}</p>
 
       <div v-if="post.image" class="post-image">
-        <div class="image-placeholder">
-          <svg width="48" height="48" fill="currentColor" viewBox="0 0 24 24">
-            <path
-              d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"
-            />
-          </svg>
-          <span>Image Preview</span>
+        <div>
+          <img
+            :src="getAvatarUrl(post.image)"
+            alt="avatar"
+            @error="(e) => (e.target.src = 'https://placehold.co/600x400?text=No+Image')"
+          />
         </div>
       </div>
     </div>
@@ -119,18 +108,10 @@
         <div v-for="comment in comments" :key="comment.id" class="comment-item">
           <div class="comment-avatar-small">
             <img
-              v-if="comment.avatar"
-              :src="getAvatarUrl(comment.avatar)"
+              :src="getAvatarUrl(comment?.avatar)"
               alt="avatar"
               class="avatar-img"
-              @error="handleAvatarError"
-            />
-            <img
-              v-else
-              src="/profile.png"
-              alt="avatar"
-              class="avatar-img"
-              @error="handleAvatarError"
+              @error="(e) => (e.target.src = '/profile.png')"
             />
           </div>
 
@@ -314,6 +295,20 @@ const deletePost = async () => {
 .menu-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
+}
+
+.post-image {
+  margin-top: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.post-image img {
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
 }
 
 .post-content {

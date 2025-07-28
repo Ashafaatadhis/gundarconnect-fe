@@ -212,7 +212,12 @@
             <!-- Komentar item -->
             <div v-for="(comment, index) in post.comments" :key="index" class="comment-item">
               <div class="comment-avatar">
-                <img :src="avatarSrc" alt="User Avatar" class="avatar" @error="onAvatarError" />
+                <img
+                  :src="getAvatarUrl(comment.author?.avatar)"
+                  alt="User Avatar"
+                  class="avatar"
+                  @error="onAvatarError"
+                />
               </div>
               <div class="comment-content">
                 <div class="comment-header">
@@ -292,20 +297,27 @@
 
         <div class="comment-modal-footer">
           <div class="comment-input-container">
-            <img
+            <!-- <img
               v-if="currentUserAvatar"
               :src="currentUserAvatar"
               alt="User Avatar"
               class="comment-avatar-input"
+            /> -->
+
+            <img
+              :src="getAvatarUrl(currentUserAvatar)"
+              alt="User Avatar"
+              class="comment-avatar-input"
+              @error="(e) => (e.target.src = '/profile.png')"
             />
-            <div v-else class="comment-avatar-placeholder">
+            <!-- <div v-else class="comment-avatar-placeholder">
               {{ (currentUserName || 'U').charAt(0).toUpperCase() }}
-            </div>
+            </div> -->
             <div class="comment-form">
               <input
                 type="text"
                 v-model="newComment"
-                placeholder="Komentari sebagai David Radot"
+                :placeholder="`Komentari sebagai ${currentUserName}`"
                 class="comment-input"
                 @keyup.enter="submitComment"
               />
