@@ -23,14 +23,14 @@
         <h1 class="brand-title">
           <span
             class="letter"
-            v-for="(letter, index) in 'GundarConnect'.split('')"
+            v-for="(letter, index) in platformLetters"
             :key="index"
             :style="{ animationDelay: `${index * 0.1}s` }"
           >
             {{ letter }}
           </span>
         </h1>
-        <p class="brand-subtitle">Platform Digital Mahasiswa Modern</p>
+        <p class="brand-subtitle">{{ settings.general.description }}</p>
       </div>
     </div>
 
@@ -160,9 +160,10 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user' // ⬅️ Import user store
+import axios from 'axios'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 export default {
@@ -181,12 +182,37 @@ export default {
       password: '',
     })
 
+    const settings = reactive({
+      general: {
+        platformName: '',
+        description: '',
+      },
+    })
+
     const showPassword = ref(false)
     const isLoading = ref(false)
     const message = ref('')
     const messageType = ref('info')
     const focusedField = ref('')
     const isLoaded = ref(false)
+
+    const loadSettings = async () => {
+      try {
+        const { data } = await axios.get(`${API_BASE_URL}/api/platform-settings`)
+        settings.general.platformName = data.name
+        settings.general.description = data.description
+      } catch (err) {
+        console.error('Gagal load pengaturan platform', err)
+      }
+    }
+
+    onMounted(async () => {
+      await loadSettings()
+    })
+
+    const platformLetters = computed(() => {
+      return settings.general.platformName.split('')
+    })
 
     onMounted(() => {
       setTimeout(() => {
@@ -285,7 +311,9 @@ export default {
       messageType,
       focusedField,
       isLoaded,
+      settings,
       handleLogin,
+      platformLetters,
       togglePassword,
       clearError,
       showMessage,
